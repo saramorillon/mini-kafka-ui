@@ -1,4 +1,4 @@
-import { DetailsList, DetailsListLayoutMode, IColumn } from '@fluentui/react'
+import { DetailsList, DetailsListLayoutMode, IColumn, SelectionMode } from '@fluentui/react'
 import { Consumer, KafkaMessage } from 'kafkajs'
 import React, { useEffect, useState } from 'react'
 import ReactJson from 'react-json-view'
@@ -39,36 +39,7 @@ export function Messages({ consumer }: IMessagesProps): JSX.Element {
       items={messages}
       columns={columns}
       layoutMode={DetailsListLayoutMode.justified}
-      isHeaderVisible={true}
-      onItemInvoked={onItemInvoked}
-      enterModalSelectionOnTouch={true}
-      ariaLabelForSelectionColumn="Toggle selection"
-      ariaLabelForSelectAllCheckbox="Toggle selection for all items"
-      checkButtonAriaLabel="select row"
+      selectionMode={SelectionMode.none}
     />
-    // <TableContainer>
-    //   <Table>
-    //     <TableHeader>
-    //       <TableRow>
-    //         <TableCell>Key</TableCell>
-    //         <TableCell>Message</TableCell>
-    //       </TableRow>
-    //     </TableHeader>
-    //     <TableBody>
-    //       {messages.map((message) => (
-    //         <TableRow key={message.key.toString()}>
-    //           <TableCell>{message.key.toString()}</TableCell>
-    //           <TableCell>
-    //             {message.value && <ReactJson collapsed src={JSON.parse(message.value.toString())} />}
-    //           </TableCell>
-    //         </TableRow>
-    //       ))}
-    //     </TableBody>
-    //   </Table>
-    // </TableContainer>
   )
-}
-
-function onItemInvoked(item: any): void {
-  console.log(`Item invoked: ${item.name}`)
 }

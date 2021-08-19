@@ -1,4 +1,4 @@
-import { readFileSync, writeFileSync } from 'fs'
+import { existsSync, readFileSync, writeFileSync } from 'fs'
 import path from 'path'
 import React, { createContext, PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import { IConnection } from '../models/IConnection'
@@ -6,6 +6,7 @@ import { IConnection } from '../models/IConnection'
 const config = path.join(process.cwd(), 'config.json')
 
 function getConnections(): IConnection[] {
+  if (!existsSync(config)) writeFileSync(config, '[]', 'utf8')
   const content = readFileSync(config, 'utf8')
   return JSON.parse(content)
 }
