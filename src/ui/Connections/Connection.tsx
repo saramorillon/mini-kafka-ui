@@ -32,7 +32,7 @@ export function Connection(): JSX.Element {
   )
 
   return (
-    <form onSubmit={onSubmit} style={{ flex: 1 }}>
+    <form onSubmit={onSubmit}>
       <Stack tokens={{ padding: '1rem', childrenGap: '1rem' }}>
         <TextField label="Connection name" required value={name || ''} onChange={(e, value) => setName(value)} />
         <TextField label="Brokers" required value={brokers || ''} onChange={(e, value) => setBrokers(value)} />

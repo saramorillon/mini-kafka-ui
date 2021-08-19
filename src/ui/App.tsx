@@ -1,7 +1,6 @@
 import { Global } from '@emotion/react'
 import { Stack } from '@fluentui/react'
-import { Consumer } from 'kafkajs'
-import React, { useState } from 'react'
+import React from 'react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import { ConnectionsProvider } from '../contexts/ConnectionsContext'
 import { Connection } from './Connections/Connection'
@@ -10,21 +9,6 @@ import { Messages } from './Messages/Messages'
 import { NavPanel } from './NavPanel/NavPanel'
 
 export function App(): JSX.Element {
-  const [consumer, setConsumer] = useState<Consumer>()
-
-  // const onSubmit = useCallback(
-  //   (e) => {
-  //     e.preventDefault()
-  //     if (consumer) {
-  //       consumer.disconnect()
-  //       setConsumer(undefined)
-  //     } else if (topic) {
-  //       createConsumer(brokers[env], topic, v4()).then(setConsumer)
-  //     }
-  //   },
-  //   [consumer, env, topic]
-  // )
-
   return (
     <ConnectionsProvider>
       <MemoryRouter>
@@ -33,10 +17,12 @@ export function App(): JSX.Element {
           <Header />
           <Stack horizontal styles={{ root: { flex: 1 } }}>
             <NavPanel />
-            <Switch>
-              <Route exact path="/connection/:id?" component={Connection} />
-            </Switch>
-            {consumer && <Messages consumer={consumer} />}
+            <div style={{ flex: 1 }}>
+              <Switch>
+                <Route exact path="/connection/:id?" component={Connection} />
+                <Route exact path="/consumer/:id?" component={Messages} />
+              </Switch>
+            </div>
           </Stack>
         </Stack>
       </MemoryRouter>
