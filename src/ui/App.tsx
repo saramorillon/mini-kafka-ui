@@ -4,10 +4,10 @@ import { Consumer } from 'kafkajs'
 import React, { useState } from 'react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
 import { ConnectionsProvider } from '../contexts/ConnectionsContext'
-import { Connection } from './Connection'
-import { Header } from './Header'
-import { Messages } from './Messages'
-import { NavPanel } from './NavPanel'
+import { Connection } from './Connections/Connection'
+import { Header } from './Header/Header'
+import { Messages } from './Messages/Messages'
+import { NavPanel } from './NavPanel/NavPanel'
 
 export function App(): JSX.Element {
   const [consumer, setConsumer] = useState<Consumer>()

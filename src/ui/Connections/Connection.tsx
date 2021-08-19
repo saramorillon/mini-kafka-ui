@@ -1,8 +1,8 @@
 import { PrimaryButton, Stack, TextField } from '@fluentui/react'
 import React, { useState, useContext, FormEvent, useCallback, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { ConnectionsContext } from '../contexts/ConnectionsContext'
-import { IConnection } from '../models/IConnection'
+import { ConnectionsContext } from '../../contexts/ConnectionsContext'
+import { IConnection } from '../../models/IConnection'
 
 export function Connection(): JSX.Element {
   const { id } = useParams<{ id: string }>()

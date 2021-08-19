@@ -1,7 +1,7 @@
 import { FontIcon, getTheme, IRawStyle, ITheme, mergeStyleSets, Stack } from '@fluentui/react'
 import React, { useContext, useCallback } from 'react'
 import { useHistory } from 'react-router-dom'
-import { ConnectionsContext } from '../contexts/ConnectionsContext'
+import { ConnectionsContext } from '../../contexts/ConnectionsContext'
 
 const { palette, semanticColors, fonts }: ITheme = getTheme()
 
