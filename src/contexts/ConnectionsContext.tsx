@@ -38,7 +38,7 @@ export function ConnectionsProvider({ children }: PropsWithChildren<unknown>): J
   )
 
   const saveConnection = useCallback((connection: IConnection, index?: number | string) => {
-    if (index) setConnections((connections) => [...connections, connection])
+    if (index === undefined) setConnections((connections) => [...connections, connection])
     else
       setConnections((connections) => [
         ...connections.slice(0, Number(index)),
