@@ -3,3 +3,4 @@ dist
 .env
 yarn-error.log
 config.json
+mini-kafka-ui-win32-x64

@@ -1,11 +1,21 @@
 {
-  "name": "miin-kafka-ui",
+  "name": "mini-kafka-ui",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "author": {
+    "name": "Sara Morillon",
+    "url": "https://saramorillon.com/"
+  },
+  "repository": {
+    "url": "https://github.com/saramorillon/mini-kafka-ui"
+  },
   "scripts": {
     "serve": "poi --serve",
-    "start": "nodemon index.js"
+    "build": "poi --prod",
+    "postbuild": "copy .\\package.json .\\dist\\ && copy .\\index.js .\\dist\\",
+    "start": "nodemon index.js",
+    "package:win32": "yarn build && electron-packager dist --platform=win32 --arch=x64 --overwrite --icon=public/favicon.ico"
   },
   "devDependencies": {
     "@mini-utils/eslint-config-typescript": "^1.0.4",
@@ -20,6 +30,7 @@
     "@typescript-eslint/eslint-plugin": "^4.29.2",
     "@typescript-eslint/parser": "^4.29.2",
     "dotenv": "^10.0.0",
+    "electron": "^13.2.1",
     "electron-packager": "^15.3.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-typescript": "^2.4.0",
@@ -42,7 +53,6 @@
     "basscss": "^8.1.0",
     "bootstrap": "^4.6.0",
     "date-fns": "^2.23.0",
-    "electron": "^13.1.9",
     "kafkajs": "^1.15.0",
     "kafkajs-lz4": "^2.0.0-beta.0",
     "react": "^17.0.2",
