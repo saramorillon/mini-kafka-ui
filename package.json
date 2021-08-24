@@ -1,5 +1,6 @@
 {
   "name": "mini-kafka-ui",
+  "description": "Mini UI to consume Kafka messages",
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
@@ -15,7 +16,8 @@
     "build": "poi --prod",
     "postbuild": "copy .\\package.json .\\dist\\ && copy .\\index.js .\\dist\\",
     "start": "nodemon index.js",
-    "package:win32": "yarn build && electron-packager dist --platform=win32 --arch=x64 --overwrite --icon=public/favicon.ico"
+    "package:win32": "yarn build && electron-packager dist --platform=win32 --arch=x64 --overwrite --icon=public/favicon.ico",
+    "create-installer:win32": "electron-installer-windows --src mini-kafka-ui-win32-x64/ --dest installer"
   },
   "devDependencies": {
     "@mini-utils/eslint-config-typescript": "^1.0.4",
@@ -29,6 +31,7 @@
     "@typescript-eslint/parser": "^4.29.2",
     "dotenv": "^10.0.0",
     "electron": "^13.2.1",
+    "electron-installer-windows": "^3.0.0",
     "electron-packager": "^15.3.0",
     "eslint": "^7.32.0",
     "eslint-import-resolver-typescript": "^2.4.0",
