@@ -1,4 +1,3 @@
-import { Global } from '@emotion/react'
 import { Stack } from '@fluentui/react'
 import React from 'react'
 import { MemoryRouter, Route, Switch } from 'react-router-dom'
@@ -12,7 +11,6 @@ export function App(): JSX.Element {
   return (
     <ConnectionsProvider>
       <MemoryRouter>
-        <Global styles={{ body: { margin: 0 } }} />
         <Stack styles={{ root: { height: '100vh' } }}>
           <Header />
           <Stack horizontal styles={{ root: { flex: 1 } }}>
