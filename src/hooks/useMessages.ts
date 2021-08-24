@@ -14,6 +14,7 @@ export function useMessages(connection?: IConnection): [KafkaMessage[], { loadin
   }, [connection])
 
   useEffect(() => {
+    setLoading(true)
     consumer?.on('consumer.group_join', () => setLoading(false))
     consumer?.run({ eachMessage: async ({ message }) => setMessages((messages) => [...messages, message]) })
     return () => {
