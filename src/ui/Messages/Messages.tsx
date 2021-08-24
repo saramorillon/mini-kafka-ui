@@ -1,4 +1,16 @@
-import { DetailsList, DetailsListLayoutMode, IColumn, SelectionMode, Stack, StackItem, Text } from '@fluentui/react'
+import {
+  DetailsListLayoutMode,
+  IColumn,
+  MessageBar,
+  MessageBarType,
+  SelectionMode,
+  ShimmeredDetailsList,
+  Spinner,
+  SpinnerSize,
+  Stack,
+  StackItem,
+  Text,
+} from '@fluentui/react'
 import { KafkaMessage } from 'kafkajs'
 import React from 'react'
 import ReactJson from 'react-json-view'
@@ -39,7 +51,7 @@ const columns: IColumn[] = [
 export function Messages(): JSX.Element {
   const { id } = useParams<{ id: string }>()
   const connection = useConnection(id)
-  const messages = useMessages(connection)
+  const [messages, { loading }] = useMessages(connection)
 
   return (
     <Stack>
@@ -56,12 +68,20 @@ export function Messages(): JSX.Element {
           <b>Topic:</b> {connection?.topic}
         </Text>
       </StackItem>
-      <DetailsList
+      <ShimmeredDetailsList
         items={messages}
         columns={columns}
         layoutMode={DetailsListLayoutMode.justified}
         selectionMode={SelectionMode.none}
       />
+      {loading && <Spinner size={SpinnerSize.large} />}
+      {!loading && !messages.length && (
+        <StackItem tokens={{ padding: '0 1rem' }}>
+          <MessageBar messageBarType={MessageBarType.info} isMultiline={false}>
+            No messages for now
+          </MessageBar>
+        </StackItem>
+      )}
     </Stack>
   )
 }
