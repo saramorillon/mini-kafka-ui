@@ -1,11 +1,13 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs'
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import path from 'path'
 import React, { createContext, PropsWithChildren, useCallback, useEffect, useState } from 'react'
 import { IConnection } from '../models/IConnection'
+import { settings } from '../settings'
 
-const config = path.join(process.cwd(), 'config.json')
+const config = path.join(settings.configDir, 'config.json')
 
 function getConnections(): IConnection[] {
+  if (!existsSync(settings.configDir)) mkdirSync(settings.configDir)
   if (!existsSync(config)) writeFileSync(config, '[]', 'utf8')
   const content = readFileSync(config, 'utf8')
   return JSON.parse(content)
