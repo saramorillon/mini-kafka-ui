@@ -1,21 +1,17 @@
 import { PrimaryButton, Stack, TextField } from '@fluentui/react'
-import React, { useState, useContext, FormEvent, useCallback, useEffect } from 'react'
+import React, { FormEvent, useCallback, useContext, useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { ConnectionsContext } from '../../contexts/ConnectionsContext'
-import { IConnection } from '../../models/IConnection'
+import { useConnection } from '../../hooks/useConnection'
 
 export function Connection(): JSX.Element {
   const { id } = useParams<{ id: string }>()
-  const { getConnection, saveConnection } = useContext(ConnectionsContext)
-  const [connection, setConnection] = useState<IConnection>()
+  const { saveConnection } = useContext(ConnectionsContext)
+  const connection = useConnection(id)
 
   const [name, setName] = useState<string>()
   const [brokers, setBrokers] = useState<string>()
   const [topic, setTopic] = useState<string>()
-
-  useEffect(() => {
-    setConnection(getConnection(id))
-  }, [id, getConnection])
 
   useEffect(() => {
     setName(connection?.name)

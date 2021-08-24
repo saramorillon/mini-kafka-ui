@@ -1,12 +1,10 @@
-import { DetailsList, DetailsListLayoutMode, IColumn, SelectionMode } from '@fluentui/react'
-import { Consumer, KafkaMessage } from 'kafkajs'
-import React, { useContext, useEffect, useState } from 'react'
+import { DetailsList, DetailsListLayoutMode, IColumn, SelectionMode, Stack, StackItem, Text } from '@fluentui/react'
+import { KafkaMessage } from 'kafkajs'
+import React from 'react'
 import ReactJson from 'react-json-view'
 import { useParams } from 'react-router-dom'
-import { v4 } from 'uuid'
-import { ConnectionsContext } from '../../contexts/ConnectionsContext'
-import { IConnection } from '../../models/IConnection'
-import { createConsumer } from '../../services/Consumer'
+import { useConnection } from '../../hooks/useConnection'
+import { useMessages } from '../../hooks/useMessages'
 
 const columns: IColumn[] = [
   {
@@ -40,32 +38,30 @@ const columns: IColumn[] = [
 
 export function Messages(): JSX.Element {
   const { id } = useParams<{ id: string }>()
-  const { getConnection } = useContext(ConnectionsContext)
-  const [connection, setConnection] = useState<IConnection>()
-  const [consumer, setConsumer] = useState<Consumer>()
-  const [messages, setMessages] = useState<KafkaMessage[]>([])
-
-  useEffect(() => {
-    setConnection(getConnection(id))
-  }, [id, getConnection])
-
-  useEffect(() => {
-    if (connection) createConsumer(connection.brokers, connection.topic, v4()).then(setConsumer)
-  }, [connection])
-
-  useEffect(() => {
-    consumer?.run({ eachMessage: async ({ message }) => setMessages((messages) => [...messages, message]) })
-    return () => {
-      consumer?.disconnect()
-    }
-  }, [consumer])
+  const connection = useConnection(id)
+  const messages = useMessages(connection)
 
   return (
-    <DetailsList
-      items={messages}
-      columns={columns}
-      layoutMode={DetailsListLayoutMode.justified}
-      selectionMode={SelectionMode.none}
-    />
+    <Stack>
+      <StackItem tokens={{ padding: '0 1rem' }}>
+        <Text variant="xLarge">{connection?.name}</Text>
+      </StackItem>
+      <StackItem tokens={{ padding: '0 1rem' }}>
+        <Text variant="small">
+          <b>Brokers:</b> {connection?.brokers.join(', ')}
+        </Text>
+      </StackItem>
+      <StackItem tokens={{ padding: '0 1rem' }}>
+        <Text variant="small">
+          <b>Topic:</b> {connection?.topic}
+        </Text>
+      </StackItem>
+      <DetailsList
+        items={messages}
+        columns={columns}
+        layoutMode={DetailsListLayoutMode.justified}
+        selectionMode={SelectionMode.none}
+      />
+    </Stack>
   )
 }
