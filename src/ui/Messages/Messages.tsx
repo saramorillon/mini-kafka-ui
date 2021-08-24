@@ -26,7 +26,14 @@ const columns: IColumn[] = [
     isResizable: true,
     onRender: function Cell(message: KafkaMessage) {
       if (!message.value) return null
-      return <ReactJson collapsed src={JSON.parse(message.value.toString())} enableClipboard={false} />
+      return (
+        <ReactJson
+          src={JSON.parse(message.value.toString())}
+          collapsed
+          displayDataTypes={false}
+          displayObjectSize={false}
+        />
+      )
     },
   },
 ]
@@ -40,7 +47,7 @@ export function Messages(): JSX.Element {
 
   useEffect(() => {
     setConnection(getConnection(id))
-  }, [id])
+  }, [id, getConnection])
 
   useEffect(() => {
     if (connection) createConsumer(connection.brokers, connection.topic, v4()).then(setConsumer)
