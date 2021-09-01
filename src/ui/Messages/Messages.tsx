@@ -26,7 +26,7 @@ const columns: IColumn[] = [
     maxWidth: 400,
     isResizable: true,
     onRender: function Cell(message: KafkaMessage) {
-      return <span>{message.key.toString()}</span>
+      return <span>{message.key?.toString()}</span>
     },
   },
   {
