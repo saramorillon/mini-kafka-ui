@@ -1,11 +1,11 @@
-import { IconButton, Pivot, PivotItem } from '@fluentui/react'
+import { Icon, Pivot, PivotItem } from '@fluentui/react'
 import React, { useContext } from 'react'
-import { ConnectionsContext } from '../../contexts/ConnectionsContext'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import { IConnection } from '../../models/IConnection'
 import { Messages } from '../Messages/Messages'
 
 export function Connections(): JSX.Element {
-  const { activeConnection, openConnections } = useContext(ConnectionsContext)
+  const { activeConnection, openConnections } = useContext(ConfigContext)
 
   return (
     <Pivot overflowBehavior="menu" style={{ overflow: 'hidden', flex: 1 }} selectedKey={activeConnection}>
@@ -28,17 +28,19 @@ interface ICustomPivotItemProps {
 }
 
 function CustomPivotItem({ connection }: ICustomPivotItemProps) {
-  const { dispatch } = useContext(ConnectionsContext)
+  const { dispatch } = useContext(ConfigContext)
 
   const { key, name } = connection
 
   return (
     <>
-      <span onClick={() => dispatch({ type: 'open', key })}>{name}</span>
-      <IconButton
-        iconProps={{ iconName: 'ChromeClose' }}
+      <span onClick={() => dispatch({ type: 'open', key })} style={{ paddingRight: '0.25rem' }}>
+        {name}
+      </span>
+      <Icon
+        iconName="ChromeClose"
         title="Close"
-        styles={{ icon: { fontSize: '0.5rem' } }}
+        styles={{ root: { fontSize: '0.5rem', paddingLeft: '0.25rem' } }}
         onClick={() => dispatch({ type: 'close', key })}
       />
     </>

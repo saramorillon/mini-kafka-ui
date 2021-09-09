@@ -10,7 +10,7 @@ import {
   TextField,
 } from '@fluentui/react'
 import React, { FormEvent, useCallback, useContext, useEffect, useState } from 'react'
-import { ConnectionsContext } from '../../contexts/ConnectionsContext'
+import { ConfigContext } from '../../contexts/ConfigContext'
 import { IConnection } from '../../models/IConnection'
 
 interface IConnectionProps {
@@ -19,7 +19,7 @@ interface IConnectionProps {
 }
 
 export function Connection({ connection, onDismiss }: IConnectionProps): JSX.Element {
-  const { dispatch } = useContext(ConnectionsContext)
+  const { dispatch } = useContext(ConfigContext)
 
   const [name, setName] = useState<string>()
   const [brokers, setBrokers] = useState<string[]>([])
@@ -34,7 +34,8 @@ export function Connection({ connection, onDismiss }: IConnectionProps): JSX.Ele
   const onSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault()
-      dispatch({ type: 'save', key: connection?.key, connection: { name, brokers, topic } })
+      const body: Partial<IConnection> = { name, brokers, topic }
+      dispatch({ type: 'save', key: connection?.key, connection: body })
       onDismiss()
     },
     [onDismiss, dispatch, connection, name, brokers, topic]

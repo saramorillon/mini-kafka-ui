@@ -1,13 +1,10 @@
 import { v4 } from 'uuid'
+import { IConfig } from '../models/IConfig'
 import { IConnection } from '../models/IConnection'
+import { IGroup } from '../models/IGroup'
 
-export interface IConfig {
-  activeConnection?: string
-  connections: IConnection[]
-}
-
-export type Action =
-  | { type: 'save'; key?: string; connection: Partial<IConnection> }
+export type Action<T extends IGroup = IGroup> =
+  | { type: 'save'; key?: string; connection: Partial<T> }
   | { type: 'delete'; key: string }
   | { type: 'copy'; key: string }
   | { type: 'open'; key: string }
@@ -16,15 +13,15 @@ export type Action =
 export function configReducer(config: IConfig, action: Action): IConfig {
   switch (action.type) {
     case 'save':
-      return saveConnection(config, action.connection, action.key)
+      return saveItem(config, action.connection, action.key)
     case 'delete':
-      return deleteConnection(config, action.key)
+      return deleteItem(config, action.key)
     case 'copy':
-      return copyConnection(config, action.key)
+      return copyItem(config, action.key)
     case 'open':
-      return openConnection(config, action.key)
+      return openItem(config, action.key)
     case 'close':
-      return closeConnection(config, action.key)
+      return closeItem(config, action.key)
   }
 }
 
@@ -41,34 +38,34 @@ function replaceAt<T>(array: T[], index: number, item: T) {
   return [...array.slice(0, Number(index)), item, ...array.slice(Number(index) + 1)]
 }
 
-function saveConnection(config: IConfig, connection: Partial<IConnection>, key: string = v4()): IConfig {
+function saveItem(config: IConfig, connection: Partial<IConnection>, key: string = v4()): IConfig {
   const index = config.connections.findIndex((connection) => connection.key === key)
   const newConnection = { ...defaultConnection, ...config.connections[index], ...connection, key }
   const connections = replaceAt(config.connections, index, newConnection)
-  if (index === -1) return openConnection({ ...config, connections }, key)
+  if (index === -1) return openItem({ ...config, connections }, key)
   return { ...config, connections }
 }
 
-function deleteConnection(config: IConfig, key: string): IConfig {
+function deleteItem(config: IConfig, key: string): IConfig {
   const connections = config.connections.filter((connection) => connection.key !== key)
-  return closeConnection({ ...config, connections }, key)
+  return closeItem({ ...config, connections }, key)
 }
 
-function copyConnection(config: IConfig, key: string): IConfig {
+function copyItem(config: IConfig, key: string): IConfig {
   const connection = config.connections.find((connection) => connection.key === key)
   if (!connection) return config
-  return saveConnection(config, { ...connection, key: undefined })
+  return saveItem(config, { ...connection, key: undefined })
 }
 
-function openConnection(config: IConfig, key: string): IConfig {
+function openItem(config: IConfig, key: string): IConfig {
   const connection = config.connections.find((connection) => connection.key === key)
   if (!connection) return config
-  return saveConnection({ ...config, activeConnection: key }, { open: true }, key)
+  return saveItem({ ...config, activeConnection: key }, { open: true }, key)
 }
 
-function closeConnection(config: IConfig, key: string): IConfig {
+function closeItem(config: IConfig, key: string): IConfig {
   const connection = config.connections.find((connection) => connection.key === key)
   if (!connection) return { ...config, activeConnection: undefined }
   const activeConnection = config.activeConnection === key ? undefined : config.activeConnection
-  return saveConnection({ ...config, activeConnection }, { open: false }, key)
+  return saveItem({ ...config, activeConnection }, { open: false }, key)
 }

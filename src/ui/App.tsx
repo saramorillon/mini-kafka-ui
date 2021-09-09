@@ -1,14 +1,14 @@
 import { Stack } from '@fluentui/react'
 import React from 'react'
 import { MemoryRouter } from 'react-router-dom'
-import { ConnectionsProvider } from '../contexts/ConnectionsContext'
+import { ConfigProvider } from '../contexts/ConfigContext'
 import { Connections } from './Connections/Connections'
 import { Header } from './Header/Header'
 import { NavPanel } from './NavPanel/NavPanel'
 
 export function App(): JSX.Element {
   return (
-    <ConnectionsProvider>
+    <ConfigProvider>
       <MemoryRouter>
         <Stack styles={{ root: { height: '100vh' } }}>
           <Header />
@@ -18,6 +18,6 @@ export function App(): JSX.Element {
           </Stack>
         </Stack>
       </MemoryRouter>
-    </ConnectionsProvider>
+    </ConfigProvider>
   )
 }

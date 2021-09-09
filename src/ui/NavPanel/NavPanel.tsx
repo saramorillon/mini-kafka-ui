@@ -1,7 +1,8 @@
 import { FontIcon, getTheme, IRawStyle, ITheme, mergeStyleSets, NeutralColors, Stack } from '@fluentui/react'
 import React, { useContext, useState } from 'react'
-import { ConnectionsContext } from '../../contexts/ConnectionsContext'
-import { IConnection } from '../../models/IConnection'
+import { ConfigContext } from '../../contexts/ConfigContext'
+import { IConnection, isConnection } from '../../models/IConnection'
+import { IGroup } from '../../models/IGroup'
 import { Connection } from '../Connection/Connection'
 
 const { palette, semanticColors, fonts }: ITheme = getTheme()
@@ -26,26 +27,23 @@ const classNames = mergeStyleSets({
 })
 
 export function NavPanel(): JSX.Element {
-  const [connection, setConnection] = useState<IConnection>()
-  const { connections } = useContext(ConnectionsContext)
+  const [item, setItem] = useState<IGroup>()
 
   return (
     <Stack className={classNames.navigation}>
-      {Object.values(connections).map((connection) => (
-        <NavItem key={connection.key} connection={connection} editConnection={setConnection} />
-      ))}
-      {connection && <Connection connection={connection} onDismiss={() => setConnection(undefined)} />}
+      <Tree root="root" onItemEdit={setItem} />
+      {isConnection(item) && <Connection connection={item} onDismiss={() => setItem(undefined)} />}
     </Stack>
   )
 }
 
 interface INavItemProps {
-  connection: IConnection
-  editConnection: (connection: IConnection) => void
+  item: IGroup
+  editConnection: (connection: IGroup) => void
 }
 
-function NavItem({ connection, editConnection }: INavItemProps) {
-  const { dispatch } = useContext(ConnectionsContext)
+function NavItem({ item: connection, editConnection }: INavItemProps) {
+  const { dispatch } = useContext(ConfigContext)
   const { key, name } = connection
 
   return (
@@ -57,5 +55,30 @@ function NavItem({ connection, editConnection }: INavItemProps) {
       <FontIcon iconName="Delete" className={classNames.icon} onClick={() => dispatch({ type: 'delete', key })} />
       <FontIcon iconName="Copy" className={classNames.icon} onClick={() => dispatch({ type: 'copy', key })} />
     </Stack>
+  )
+}
+
+interface ITreeProps {
+  root: string
+  onItemEdit: (item: IGroup) => void
+}
+
+function Tree({ root, onItemEdit }: ITreeProps) {
+  const { config, getItem } = useContext(ConfigContext)
+
+  const item = getItem(root)
+  const items = config.tree[root]
+
+  return (
+    <>
+      {item && <NavItem key={root} item={item} editConnection={onItemEdit} />}
+      {items?.length && (
+        <Stack styles={{ root: { marginLeft: 5 } }}>
+          {items.map((item) => (
+            <Tree key={item} root={item} onItemEdit={onItemEdit} />
+          ))}
+        </Stack>
+      )}
+    </>
   )
 }

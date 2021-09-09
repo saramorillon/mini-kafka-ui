@@ -4,10 +4,11 @@ import openBrowser from 'open'
 import React, { useCallback, useMemo, useState } from 'react'
 import { settings } from '../../settings'
 import { Connection } from '../Connection/Connection'
+import { Group } from '../Group/Group'
 import { Info } from '../Info/Info'
 
-function useItems(): [ICommandBarItemProps[], boolean, () => void] {
-  const [open, setOpen] = useState(false)
+function useItems(): [ICommandBarItemProps[], 'connection' | 'group' | undefined, () => void] {
+  const [open, setOpen] = useState<'connection' | 'group'>()
 
   const items = useMemo(() => {
     return [
@@ -15,12 +16,18 @@ function useItems(): [ICommandBarItemProps[], boolean, () => void] {
         key: 'connection',
         text: 'Create connection',
         iconProps: { iconName: 'Add' },
-        onClick: () => setOpen(true),
+        onClick: () => setOpen('connection'),
+      },
+      {
+        key: 'group',
+        text: 'Create group',
+        iconProps: { iconName: 'Add' },
+        onClick: () => setOpen('group'),
       },
     ]
   }, [])
 
-  return [items, open, () => setOpen(false)]
+  return [items, open, () => setOpen(undefined)]
 }
 
 function useFarItems(): [ICommandBarItemProps[], boolean, () => void] {
@@ -54,7 +61,7 @@ function useFarItems(): [ICommandBarItemProps[], boolean, () => void] {
 }
 
 export function Header(): JSX.Element {
-  const [items, connectionOpen, dismissConnection] = useItems()
+  const [items, modalOpen, dismissModal] = useItems()
   const [farItems, infoOpen, toggleInfo] = useFarItems()
 
   return (
@@ -62,7 +69,8 @@ export function Header(): JSX.Element {
       <ThemeProvider theme={commandBarTheme}>
         <CommandBar items={items} farItems={farItems} styles={{ root: { borderBottom: '1px solid #eee' } }} />
       </ThemeProvider>
-      {connectionOpen && <Connection onDismiss={dismissConnection} />}
+      {modalOpen === 'connection' && <Connection onDismiss={dismissModal} />}
+      {modalOpen === 'group' && <Group onDismiss={dismissModal} />}
       <Info open={infoOpen} toggle={toggleInfo} />
     </>
   )
