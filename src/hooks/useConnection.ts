@@ -2,13 +2,13 @@ import { useContext, useEffect, useState } from 'react'
 import { ConnectionsContext } from '../contexts/ConnectionsContext'
 import { IConnection } from '../models/IConnection'
 
-export function useConnection(id: string | number): IConnection | undefined {
+export function useConnection(key?: string): IConnection | undefined {
   const { getConnection } = useContext(ConnectionsContext)
   const [connection, setConnection] = useState<IConnection>()
 
   useEffect(() => {
-    setConnection(getConnection(id))
-  }, [id, getConnection])
+    setConnection(getConnection(key))
+  }, [key, getConnection])
 
   return connection
 }

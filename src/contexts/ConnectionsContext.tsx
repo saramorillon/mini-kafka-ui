@@ -1,60 +1,58 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import path from 'path'
-import React, { createContext, PropsWithChildren, useCallback, useEffect, useState } from 'react'
+import React, { createContext, Dispatch, PropsWithChildren, useCallback, useEffect, useMemo, useReducer } from 'react'
 import { IConnection } from '../models/IConnection'
+import { Action, configReducer, IConfig } from '../reducers/config'
 import { settings } from '../settings'
 
-const config = path.join(settings.configDir, 'config.json')
+const configFile = path.join(settings.configDir, 'config.json')
 
-function getConnections(): IConnection[] {
+function getConfig(): IConfig {
   if (!existsSync(settings.configDir)) mkdirSync(settings.configDir)
-  if (!existsSync(config)) writeFileSync(config, '[]', 'utf8')
-  const content = readFileSync(config, 'utf8')
+  if (!existsSync(configFile)) writeFileSync(configFile, '[]', 'utf8')
+  const content = readFileSync(configFile, 'utf8')
   return JSON.parse(content)
 }
 
 type ConnectionsContext = {
   connections: IConnection[]
-  getConnection: (index?: number | string) => IConnection | undefined
-  saveConnection: (connection: IConnection, index?: number | string) => void
-  deleteConnection: (index: number) => void
+  openConnections: IConnection[]
+  activeConnection?: string
+  getConnection: (key?: string) => IConnection | undefined
+  dispatch: Dispatch<Action>
 }
 
 export const ConnectionsContext = createContext<ConnectionsContext>({
   connections: [],
+  openConnections: [],
+  activeConnection: undefined,
   getConnection: () => undefined,
-  saveConnection: () => undefined,
-  deleteConnection: () => undefined,
+  dispatch: () => undefined,
 })
 
 export function ConnectionsProvider({ children }: PropsWithChildren<unknown>): JSX.Element {
-  const [connections, setConnections] = useState<IConnection[]>(getConnections())
+  const [config, dispatch] = useReducer(configReducer, getConfig())
+  const openConnections = useMemo(() => config.connections.filter((connection) => connection.open), [config])
 
   useEffect(() => {
-    writeFileSync(config, JSON.stringify(connections), 'utf8')
-  }, [connections])
+    writeFileSync(configFile, JSON.stringify(config, null, 2), 'utf8')
+  }, [config])
 
   const getConnection = useCallback(
-    (index?: number | string) => (index === undefined ? undefined : connections[Number(index)]),
-    [connections]
+    (key?: string) => config.connections.find((connection) => connection.key === key),
+    [config]
   )
 
-  const saveConnection = useCallback((connection: IConnection, index?: number | string) => {
-    if (index === undefined) setConnections((connections) => [...connections, connection])
-    else
-      setConnections((connections) => [
-        ...connections.slice(0, Number(index)),
-        connection,
-        ...connections.slice(Number(index) + 1),
-      ])
-  }, [])
-
-  const deleteConnection = useCallback((index: number) => {
-    setConnections((connections) => [...connections.slice(0, index), ...connections.slice(index + 1)])
-  }, [])
-
   return (
-    <ConnectionsContext.Provider value={{ connections, getConnection, saveConnection, deleteConnection }}>
+    <ConnectionsContext.Provider
+      value={{
+        connections: config.connections,
+        openConnections,
+        activeConnection: config.activeConnection,
+        getConnection,
+        dispatch,
+      }}
+    >
       {children}
     </ConnectionsContext.Provider>
   )

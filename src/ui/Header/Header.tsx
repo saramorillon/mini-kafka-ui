@@ -1,21 +1,26 @@
-import { CommandBar, ICommandBarItemProps } from '@fluentui/react'
+import { CommandBar, ICommandBarItemProps, ThemeProvider } from '@fluentui/react'
+import { createTheme } from '@fluentui/style-utilities'
+import openBrowser from 'open'
 import React, { useCallback, useMemo, useState } from 'react'
-import { useHistory } from 'react-router-dom'
+import { settings } from '../../settings'
+import { Connection } from '../Connection/Connection'
 import { Info } from '../Info/Info'
 
-function useItems(): ICommandBarItemProps[] {
-  const history = useHistory()
+function useItems(): [ICommandBarItemProps[], boolean, () => void] {
+  const [open, setOpen] = useState(false)
 
-  return useMemo(() => {
+  const items = useMemo(() => {
     return [
       {
         key: 'connection',
         text: 'Create connection',
         iconProps: { iconName: 'Add' },
-        onClick: () => history.push('/connection'),
+        onClick: () => setOpen(true),
       },
     ]
-  }, [history])
+  }, [])
+
+  return [items, open, () => setOpen(false)]
 }
 
 function useFarItems(): [ICommandBarItemProps[], boolean, () => void] {
@@ -23,6 +28,14 @@ function useFarItems(): [ICommandBarItemProps[], boolean, () => void] {
 
   const items = useMemo(
     () => [
+      {
+        key: 'config',
+        text: 'Config',
+        ariaLabel: 'Config',
+        iconProps: { iconName: 'ConfigurationSolid' },
+        iconOnly: true,
+        onClick: () => openBrowser(settings.configDir),
+      },
       {
         key: 'info',
         text: 'Info',
@@ -41,13 +54,43 @@ function useFarItems(): [ICommandBarItemProps[], boolean, () => void] {
 }
 
 export function Header(): JSX.Element {
-  const items = useItems()
-  const [farItems, open, toggle] = useFarItems()
+  const [items, connectionOpen, dismissConnection] = useItems()
+  const [farItems, infoOpen, toggleInfo] = useFarItems()
 
   return (
     <>
-      <CommandBar items={items} farItems={farItems} styles={{ root: { borderBottom: '1px solid #eee' } }} />
-      <Info open={open} toggle={toggle} />
+      <ThemeProvider theme={commandBarTheme}>
+        <CommandBar items={items} farItems={farItems} styles={{ root: { borderBottom: '1px solid #eee' } }} />
+      </ThemeProvider>
+      {connectionOpen && <Connection onDismiss={dismissConnection} />}
+      <Info open={infoOpen} toggle={toggleInfo} />
     </>
   )
 }
+
+const commandBarTheme = createTheme({
+  palette: {
+    themePrimary: '#303030',
+    themeLighterAlt: '#060606',
+    themeLighter: '#0b0b0b',
+    themeLight: '#101010',
+    themeTertiary: '#161616',
+    themeSecondary: '#1b1b1b',
+    themeDarkAlt: '#202020',
+    themeDark: '#262626',
+    themeDarker: '#2b2b2b',
+    neutralLighterAlt: '#09d3b5',
+    neutralLighter: '#11d5b8',
+    neutralLight: '#1fd8bc',
+    neutralQuaternaryAlt: '#28dabf',
+    neutralQuaternary: '#2fdbc1',
+    neutralTertiaryAlt: '#4fe1cb',
+    neutralTertiary: '#101010',
+    neutralSecondary: '#161616',
+    neutralPrimaryAlt: '#1b1b1b',
+    neutralPrimary: '#303030',
+    neutralDark: '#262626',
+    black: '#2b2b2b',
+    white: '#00D1B2',
+  },
+})

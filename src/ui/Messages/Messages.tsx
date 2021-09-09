@@ -9,14 +9,12 @@ import {
   SpinnerSize,
   Stack,
   StackItem,
-  Text,
 } from '@fluentui/react'
 import { KafkaMessage } from 'kafkajs'
 import React from 'react'
 import ReactJson from 'react-json-view'
-import { useParams } from 'react-router-dom'
-import { useConnection } from '../../hooks/useConnection'
 import { useMessages } from '../../hooks/useMessages'
+import { IConnection } from '../../models/IConnection'
 
 const columns: IColumn[] = [
   {
@@ -48,26 +46,15 @@ const columns: IColumn[] = [
   },
 ]
 
-export function Messages(): JSX.Element {
-  const { id } = useParams<{ id: string }>()
-  const connection = useConnection(id)
+interface IMessagesProps {
+  connection: IConnection
+}
+
+export function Messages({ connection }: IMessagesProps): JSX.Element {
   const [messages, { loading }] = useMessages(connection)
 
   return (
     <Stack>
-      <StackItem tokens={{ padding: '0 1rem' }}>
-        <Text variant="xLarge">{connection?.name}</Text>
-      </StackItem>
-      <StackItem tokens={{ padding: '0 1rem' }}>
-        <Text variant="small">
-          <b>Brokers:</b> {connection?.brokers.join(', ')}
-        </Text>
-      </StackItem>
-      <StackItem tokens={{ padding: '0 1rem' }}>
-        <Text variant="small">
-          <b>Topic:</b> {connection?.topic}
-        </Text>
-      </StackItem>
       <ShimmeredDetailsList
         items={messages}
         columns={columns}

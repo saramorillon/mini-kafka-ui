@@ -3,8 +3,10 @@ const path = require('path')
 
 function createWindow() {
   const mainWindow = new BrowserWindow({
+    icon: 'public/favicon.ico',
     webPreferences: { nodeIntegration: true, contextIsolation: false },
   })
+  mainWindow.maximize()
   mainWindow.setMenu(null)
   if (process.env.NODE_ENV === 'dev') {
     mainWindow.loadURL('http://localhost:4000')
