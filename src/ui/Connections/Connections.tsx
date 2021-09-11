@@ -30,18 +30,16 @@ interface ICustomPivotItemProps {
 function CustomPivotItem({ connection }: ICustomPivotItemProps) {
   const { dispatch } = useContext(ConfigContext)
 
-  const { key, name } = connection
-
   return (
     <>
-      <span onClick={() => dispatch({ type: 'open', key })} style={{ paddingRight: '0.25rem' }}>
-        {name}
+      <span onClick={() => dispatch({ type: 'open', item: connection })} style={{ paddingRight: '0.25rem' }}>
+        {connection.name}
       </span>
       <Icon
         iconName="ChromeClose"
         title="Close"
         styles={{ root: { fontSize: '0.5rem', paddingLeft: '0.25rem' } }}
-        onClick={() => dispatch({ type: 'close', key })}
+        onClick={() => dispatch({ type: 'close', item: connection })}
       />
     </>
   )

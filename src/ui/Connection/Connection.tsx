@@ -9,33 +9,26 @@ import {
   Stack,
   TextField,
 } from '@fluentui/react'
-import React, { FormEvent, useCallback, useContext, useEffect, useState } from 'react'
+import React, { FormEvent, useCallback, useContext, useState } from 'react'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import { IConnection } from '../../models/IConnection'
 
 interface IConnectionProps {
-  connection?: IConnection
+  connection: IConnection
   onDismiss: () => void
 }
 
 export function Connection({ connection, onDismiss }: IConnectionProps): JSX.Element {
   const { dispatch } = useContext(ConfigContext)
 
-  const [name, setName] = useState<string>()
-  const [brokers, setBrokers] = useState<string[]>([])
-  const [topic, setTopic] = useState<string>()
-
-  useEffect(() => {
-    setName(connection?.name)
-    setBrokers(connection?.brokers || [])
-    setTopic(connection?.topic)
-  }, [connection])
+  const [name, setName] = useState<string>(connection.name)
+  const [brokers, setBrokers] = useState<string[]>(connection.brokers)
+  const [topic, setTopic] = useState<string>(connection.topic)
 
   const onSubmit = useCallback(
     (e: FormEvent) => {
       e.preventDefault()
-      const body: Partial<IConnection> = { name, brokers, topic }
-      dispatch({ type: 'save', key: connection?.key, connection: body })
+      dispatch({ type: 'save', item: { ...connection, name, brokers, topic } })
       onDismiss()
     },
     [onDismiss, dispatch, connection, name, brokers, topic]
@@ -57,7 +50,7 @@ export function Connection({ connection, onDismiss }: IConnectionProps): JSX.Ele
     >
       <form onSubmit={onSubmit}>
         <Stack tokens={{ padding: '1rem', childrenGap: '1rem' }}>
-          <TextField label="Connection name" required value={name || ''} onChange={(e, value) => setName(value)} />
+          <TextField label="Connection name" required value={name} onChange={(e, value) => setName(value || '')} />
           <ComboBox
             multiSelect
             required
@@ -68,7 +61,7 @@ export function Connection({ connection, onDismiss }: IConnectionProps): JSX.Ele
             selectedKey={brokers}
             onChange={onChange}
           />
-          <TextField label="Topic" required value={topic || ''} onChange={(e, value) => setTopic(value)} />
+          <TextField label="Topic" required value={topic} onChange={(e, value) => setTopic(value || '')} />
           <Stack.Item align="end">
             <Stack horizontal tokens={{ childrenGap: '2rem' }}>
               <DefaultButton text="Cancel" type="button" onClick={onDismiss} />

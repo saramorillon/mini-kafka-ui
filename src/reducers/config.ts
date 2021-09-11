@@ -1,71 +1,68 @@
-import { v4 } from 'uuid'
 import { IConfig } from '../models/IConfig'
-import { IConnection } from '../models/IConnection'
-import { IGroup } from '../models/IGroup'
+import { copyConnection, deleteConnection, IConnection, isConnection, saveConnection } from '../models/IConnection'
+import { copyGroup, deleteGroup, IGroup, saveGroup } from '../models/IGroup'
+import { deleteFromTree, ITree, saveTree } from '../models/ITree'
 
-export type Action<T extends IGroup = IGroup> =
-  | { type: 'save'; key?: string; connection: Partial<T> }
-  | { type: 'delete'; key: string }
-  | { type: 'copy'; key: string }
-  | { type: 'open'; key: string }
-  | { type: 'close'; key: string }
+export type Action =
+  | { type: 'save'; item: IConnection; parent?: string }
+  | { type: 'save'; item: IGroup; parent?: string }
+  | { type: 'tree'; tree: ITree }
+  | { type: 'delete'; item: IConnection; parent?: string }
+  | { type: 'delete'; item: IGroup; parent?: string }
+  | { type: 'copy'; item: IConnection; parent?: string }
+  | { type: 'copy'; item: IGroup; parent?: string }
+  | { type: 'open'; item: IConnection }
+  | { type: 'close'; item: IConnection }
+  | { type: 'toggle'; item: IGroup }
 
 export function configReducer(config: IConfig, action: Action): IConfig {
   switch (action.type) {
     case 'save':
-      return saveItem(config, action.connection, action.key)
+      return saveItem(config, action.item, action.parent)
+    case 'tree':
+      return { ...config, tree: action.tree }
     case 'delete':
-      return deleteItem(config, action.key)
+      return deleteItem(config, action.item, action.parent)
     case 'copy':
-      return copyItem(config, action.key)
+      return copyItem(config, action.item, action.parent)
     case 'open':
-      return openItem(config, action.key)
+      return openItem(config, action.item)
     case 'close':
-      return closeItem(config, action.key)
+      return closeItem(config, action.item)
+    case 'toggle':
+      return toggleItem(config, action.item)
   }
 }
 
-const defaultConnection: IConnection = {
-  key: '',
-  name: '',
-  brokers: [],
-  topic: '',
-  open: false,
+function saveItem(config: IConfig, item: IGroup | IConnection, parent = 'root'): IConfig {
+  const connections = isConnection(item) ? saveConnection(config.connections, item) : config.connections
+  const groups = !isConnection(item) ? saveGroup(config.groups, item) : config.groups
+  const tree = saveTree(config.tree, item.key, parent)
+  return { ...config, connections, groups, tree }
 }
 
-function replaceAt<T>(array: T[], index: number, item: T) {
-  if (index === -1) return [...array, item]
-  return [...array.slice(0, Number(index)), item, ...array.slice(Number(index) + 1)]
+function deleteItem(config: IConfig, item: IGroup | IConnection, parent = 'root'): IConfig {
+  const connections = isConnection(item) ? deleteConnection(config.connections, item) : config.connections
+  const groups = !isConnection(item) ? deleteGroup(config.groups, item) : config.groups
+  const tree = deleteFromTree(config.tree, item.key, parent)
+  return closeItem({ ...config, connections, groups, tree }, item)
 }
 
-function saveItem(config: IConfig, connection: Partial<IConnection>, key: string = v4()): IConfig {
-  const index = config.connections.findIndex((connection) => connection.key === key)
-  const newConnection = { ...defaultConnection, ...config.connections[index], ...connection, key }
-  const connections = replaceAt(config.connections, index, newConnection)
-  if (index === -1) return openItem({ ...config, connections }, key)
-  return { ...config, connections }
+function copyItem(config: IConfig, item: IGroup | IConnection, parent = 'root'): IConfig {
+  const connections = isConnection(item) ? copyConnection(config.connections, item) : config.connections
+  const groups = !isConnection(item) ? copyGroup(config.groups, item) : config.groups
+  const tree = saveTree(config.tree, item.key, parent)
+  return { ...config, connections, groups, tree }
 }
 
-function deleteItem(config: IConfig, key: string): IConfig {
-  const connections = config.connections.filter((connection) => connection.key !== key)
-  return closeItem({ ...config, connections }, key)
+function openItem(config: IConfig, item: IGroup | IConnection): IConfig {
+  return saveItem({ ...config, activeConnection: item.key }, { ...item, open: true })
 }
 
-function copyItem(config: IConfig, key: string): IConfig {
-  const connection = config.connections.find((connection) => connection.key === key)
-  if (!connection) return config
-  return saveItem(config, { ...connection, key: undefined })
+function closeItem(config: IConfig, item: IGroup | IConnection): IConfig {
+  return saveItem({ ...config, activeConnection: undefined }, { ...item, open: false })
 }
 
-function openItem(config: IConfig, key: string): IConfig {
-  const connection = config.connections.find((connection) => connection.key === key)
-  if (!connection) return config
-  return saveItem({ ...config, activeConnection: key }, { open: true }, key)
-}
-
-function closeItem(config: IConfig, key: string): IConfig {
-  const connection = config.connections.find((connection) => connection.key === key)
-  if (!connection) return { ...config, activeConnection: undefined }
-  const activeConnection = config.activeConnection === key ? undefined : config.activeConnection
-  return saveItem({ ...config, activeConnection }, { open: false }, key)
+function toggleItem(config: IConfig, item: IGroup): IConfig {
+  return item.open ? closeItem(config, item) : openItem(config, item)
 }

@@ -2,6 +2,8 @@ import { CommandBar, ICommandBarItemProps, ThemeProvider } from '@fluentui/react
 import { createTheme } from '@fluentui/style-utilities'
 import openBrowser from 'open'
 import React, { useCallback, useMemo, useState } from 'react'
+import { getDefaultConnection } from '../../models/IConnection'
+import { getDefaultGroup } from '../../models/IGroup'
 import { settings } from '../../settings'
 import { Connection } from '../Connection/Connection'
 import { Group } from '../Group/Group'
@@ -69,8 +71,8 @@ export function Header(): JSX.Element {
       <ThemeProvider theme={commandBarTheme}>
         <CommandBar items={items} farItems={farItems} styles={{ root: { borderBottom: '1px solid #eee' } }} />
       </ThemeProvider>
-      {modalOpen === 'connection' && <Connection onDismiss={dismissModal} />}
-      {modalOpen === 'group' && <Group onDismiss={dismissModal} />}
+      {modalOpen === 'connection' && <Connection connection={getDefaultConnection()} onDismiss={dismissModal} />}
+      {modalOpen === 'group' && <Group group={getDefaultGroup()} onDismiss={dismissModal} />}
       <Info open={infoOpen} toggle={toggleInfo} />
     </>
   )
