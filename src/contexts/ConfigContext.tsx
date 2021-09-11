@@ -8,10 +8,11 @@ import { Action, configReducer } from '../reducers/config'
 import { settings } from '../settings'
 
 const configFile = path.join(settings.configDir, 'config.json')
+const emptyConfig = { tree: { root: [] }, connections: [], groups: [] }
 
 function getConfig(): IConfig {
   if (!existsSync(settings.configDir)) mkdirSync(settings.configDir)
-  if (!existsSync(configFile)) writeFileSync(configFile, '[]', 'utf8')
+  if (!existsSync(configFile)) writeFileSync(configFile, JSON.stringify(emptyConfig), 'utf8')
   const content = readFileSync(configFile, 'utf8')
   return JSON.parse(content)
 }
@@ -26,7 +27,7 @@ type ConnectionsContext = {
 }
 
 export const ConfigContext = createContext<ConnectionsContext>({
-  config: { tree: { root: [] }, connections: [], groups: [] },
+  config: emptyConfig,
   connections: [],
   openConnections: [],
   activeConnection: undefined,
