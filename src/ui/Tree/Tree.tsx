@@ -37,7 +37,7 @@ export function Tree({ identifier, parent, onItemEdit }: ITreeProps): JSX.Elemen
           {isGroup(item) && <GroupButton parent={parent} group={item} editItem={onItemEdit} />}
         </>
       )}
-      {items?.length && (item?.open || !parent) && (
+      {Boolean(items?.length) && (item?.open || !parent) && (
         <Stack className={parent ? classNames.submenu : undefined}>
           {items.map((item) => (
             <Tree key={item} identifier={item} parent={identifier} onItemEdit={onItemEdit} />
