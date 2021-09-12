@@ -1,5 +1,8 @@
 import { v4 } from 'uuid'
 import { replaceAt } from '../utils/replaceAt'
+import { IConfig } from './IConfig'
+import { isConnection } from './IConnection'
+import { deleteFromTree, saveTree } from './ITree'
 
 export interface IGroup {
   key: string
@@ -15,16 +18,22 @@ export function getDefaultGroup(): IGroup {
   }
 }
 
-export function saveGroup(groups: IGroup[], item: IGroup): IGroup[] {
-  const index = groups.findIndex((connection) => connection.key === item.key)
-  const newConnection = { ...getDefaultGroup(), ...groups[index], ...item }
-  return replaceAt(groups, index, newConnection)
+export function isGroup(item?: IGroup): item is IGroup {
+  return item !== undefined && !isConnection(item)
 }
 
-export function deleteGroup(groups: IGroup[], item: IGroup): IGroup[] {
-  return groups.filter((connection) => connection.key !== item.key)
+export function saveGroup(config: IConfig, item: IGroup, parent = 'root'): IConfig {
+  const index = config.groups.findIndex((group) => group.key === item.key)
+  const newGroup = { ...getDefaultGroup(), ...config.groups[index], ...item }
+  const tree = saveTree(config.tree, newGroup.key, parent)
+  return { ...config, tree, groups: replaceAt(config.groups, index, newGroup) }
 }
 
-export function copyGroup(groups: IGroup[], item: IGroup): IGroup[] {
-  return saveGroup(groups, { ...item, key: v4() })
+export function deleteGroup(config: IConfig, item: IGroup, parent = 'root'): IConfig {
+  const tree = deleteFromTree(config.tree, item.key, parent)
+  return { ...config, tree, groups: config.groups.filter((group) => group.key !== item.key) }
+}
+
+export function copyGroup(config: IConfig, item: IGroup, parent = 'root'): IConfig {
+  return saveGroup(config, { ...item, name: item.name + ' Copy', key: v4() }, parent)
 }

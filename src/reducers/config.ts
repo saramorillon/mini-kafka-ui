@@ -1,7 +1,7 @@
 import { IConfig } from '../models/IConfig'
 import { copyConnection, deleteConnection, IConnection, isConnection, saveConnection } from '../models/IConnection'
 import { copyGroup, deleteGroup, IGroup, saveGroup } from '../models/IGroup'
-import { deleteFromTree, ITree, saveTree } from '../models/ITree'
+import { ITree } from '../models/ITree'
 
 export type Action =
   | { type: 'save'; item: IConnection; parent?: string }
@@ -35,24 +35,18 @@ export function configReducer(config: IConfig, action: Action): IConfig {
 }
 
 function saveItem(config: IConfig, item: IGroup | IConnection, parent = 'root'): IConfig {
-  const connections = isConnection(item) ? saveConnection(config.connections, item) : config.connections
-  const groups = !isConnection(item) ? saveGroup(config.groups, item) : config.groups
-  const tree = saveTree(config.tree, item.key, parent)
-  return { ...config, connections, groups, tree }
+  if (isConnection(item)) return saveConnection(config, item, parent)
+  return saveGroup(config, item, parent)
 }
 
 function deleteItem(config: IConfig, item: IGroup | IConnection, parent = 'root'): IConfig {
-  const connections = isConnection(item) ? deleteConnection(config.connections, item) : config.connections
-  const groups = !isConnection(item) ? deleteGroup(config.groups, item) : config.groups
-  const tree = deleteFromTree(config.tree, item.key, parent)
-  return closeItem({ ...config, connections, groups, tree }, item)
+  if (isConnection(item)) return deleteConnection(config, item, parent)
+  return deleteGroup(config, item, parent)
 }
 
 function copyItem(config: IConfig, item: IGroup | IConnection, parent = 'root'): IConfig {
-  const connections = isConnection(item) ? copyConnection(config.connections, item) : config.connections
-  const groups = !isConnection(item) ? copyGroup(config.groups, item) : config.groups
-  const tree = saveTree(config.tree, item.key, parent)
-  return { ...config, connections, groups, tree }
+  if (isConnection(item)) return copyConnection(config, item, parent)
+  return copyGroup(config, item, parent)
 }
 
 function openItem(config: IConfig, item: IGroup | IConnection): IConfig {
