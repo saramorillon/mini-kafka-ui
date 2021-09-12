@@ -10,7 +10,7 @@ function createWindow() {
   mainWindow.setMenu(null)
   if (process.env.NODE_ENV === 'dev') {
     mainWindow.loadURL('http://localhost:4000')
-    mainWindow.webContents.openDevTools({ mode: 'undocked', activate: false })
+    mainWindow.webContents.openDevTools({ mode: 'right', activate: false })
   } else {
     mainWindow.loadFile(path.join(process.cwd(), 'resources', 'app', 'index.html'))
   }
