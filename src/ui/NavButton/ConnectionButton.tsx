@@ -12,23 +12,20 @@ interface IConnectionButtonProps {
 
 export function ConnectionButton({ parent, connection, editItem }: IConnectionButtonProps): JSX.Element {
   const { dispatch } = useContext(ConfigContext)
-  const { drag, drop } = useDnd('connection', connection, parent)
+  const { drag } = useDnd('connection', connection, parent)
 
   const [{ isDragged }, dragRef] = drag
-  const [{ isOver }, dropRef] = drop
 
   return (
-    <div ref={dropRef} style={{ borderBottom: isOver ? '1px solid blue' : 'none' }}>
-      <div ref={dragRef} style={{ opacity: isDragged ? 0.5 : 1 }}>
-        <NavButton
-          onOpen={() => dispatch({ type: 'open', item: connection })}
-          onEdit={() => editItem(connection)}
-          onDelete={() => dispatch({ type: 'delete', item: connection })}
-          onCopy={() => dispatch({ type: 'copy', item: connection, parent })}
-        >
-          {connection?.name}
-        </NavButton>
-      </div>
+    <div ref={dragRef} style={{ opacity: isDragged ? 0.5 : 1 }}>
+      <NavButton
+        onOpen={() => dispatch({ type: 'open', item: connection })}
+        onEdit={() => editItem(connection)}
+        onDelete={() => dispatch({ type: 'delete', item: connection })}
+        onCopy={() => dispatch({ type: 'copy', item: connection, parent })}
+      >
+        {connection?.name}
+      </NavButton>
     </div>
   )
 }
