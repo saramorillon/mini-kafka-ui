@@ -1,5 +1,5 @@
-import { mergeStyleSets, NeutralColors, Stack } from '@fluentui/react'
-import React, { useContext } from 'react'
+import { mergeStyleSets, Stack, useTheme } from '@fluentui/react'
+import React, { useContext, useMemo } from 'react'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import { isConnection } from '../../models/IConnection'
 import { IGroup, isGroup } from '../../models/IGroup'
@@ -7,15 +7,23 @@ import { ITree } from '../../models/ITree'
 import { ConnectionButton } from '../NavButton/ConnectionButton'
 import { GroupButton } from '../NavButton/GroupButton'
 
-const classNames = mergeStyleSets({
-  submenu: [
-    {
-      marginLeft: '1rem',
-      paddingLeft: '1rem',
-      borderLeft: `1px solid ${NeutralColors.gray40}`,
-    },
-  ],
-})
+function useClassnames() {
+  const { palette } = useTheme()
+
+  return useMemo(
+    () =>
+      mergeStyleSets({
+        submenu: [
+          {
+            marginLeft: '1rem',
+            paddingLeft: '1rem',
+            borderLeft: `1px solid ${palette.neutralLight}`,
+          },
+        ],
+      }),
+    [palette]
+  )
+}
 
 interface ITreeProps {
   identifier: keyof ITree
@@ -25,6 +33,7 @@ interface ITreeProps {
 
 export function Tree({ identifier, parent, onItemEdit }: ITreeProps): JSX.Element {
   const { config, getItem } = useContext(ConfigContext)
+  const classNames = useClassnames()
 
   const item = getItem(identifier)
   const items = config.tree[identifier]
