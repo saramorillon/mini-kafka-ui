@@ -1,7 +1,7 @@
 import { IConfig } from '../models/IConfig'
 import { copyConnection, deleteConnection, IConnection, isConnection, saveConnection } from '../models/IConnection'
 import { copyGroup, deleteGroup, IGroup, saveGroup } from '../models/IGroup'
-import { ITree } from '../models/ITree'
+import { deleteFromTree, ITree, saveTree } from '../models/ITree'
 
 export type Action =
   | { type: 'save'; item: IConnection; parent?: string }
@@ -14,6 +14,7 @@ export type Action =
   | { type: 'open'; item: IConnection }
   | { type: 'close'; item: IConnection }
   | { type: 'toggle'; item: IGroup }
+  | { type: 'move'; item: IGroup; oldParent: string; newParent: string }
 
 export function configReducer(config: IConfig, action: Action): IConfig {
   switch (action.type) {
@@ -31,6 +32,8 @@ export function configReducer(config: IConfig, action: Action): IConfig {
       return closeItem(config, action.item)
     case 'toggle':
       return toggleItem(config, action.item)
+    case 'move':
+      return moveItem(config, action.item, action.oldParent, action.newParent)
   }
 }
 
@@ -59,4 +62,9 @@ function closeItem(config: IConfig, item: IGroup | IConnection): IConfig {
 
 function toggleItem(config: IConfig, item: IGroup): IConfig {
   return item.open ? closeItem(config, item) : openItem(config, item)
+}
+
+function moveItem(config: IConfig, item: IGroup, oldParent: string, newParent: string): IConfig {
+  const tree = deleteFromTree(config.tree, item.key, oldParent)
+  return { ...config, tree: saveTree(tree, item.key, newParent) }
 }

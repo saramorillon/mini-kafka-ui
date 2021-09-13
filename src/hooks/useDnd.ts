@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import {
   ConnectDragPreview,
   ConnectDragSource,
@@ -7,6 +7,7 @@ import {
   useDrag,
   useDrop,
 } from 'react-dnd'
+import { ConfigContext } from '../contexts/ConfigContext'
 import { IGroup } from '../models/IGroup'
 
 interface IDraggedItem {
@@ -20,13 +21,18 @@ interface IDndResult {
 }
 
 export function useDnd(type: 'connection' | 'group', item: IGroup, parent: string): IDndResult {
+  const { dispatch } = useContext(ConfigContext)
   const [isStayedOver, setStayedOver] = useState(false)
 
   const collectDrag = useCallback((monitor) => ({ isDragged: monitor.isDragging() }), [])
   const dragResult = useDrag(() => ({ item: { draggedItem: item, parent }, type, collect: collectDrag }), [item])
 
   const collectDrop = useCallback((monitor: DropTargetMonitor) => ({ isOver: monitor.isOver(), isStayedOver }), [])
-  const drop = useCallback(({ draggedItem, parent }: IDraggedItem) => console.log(draggedItem, parent, item), [])
+  const drop = useCallback(
+    ({ draggedItem, parent }: IDraggedItem) =>
+      dispatch({ type: 'move', item: draggedItem, oldParent: parent, newParent: item.key }),
+    []
+  )
   const [dropCollect, dropRef] = useDrop(
     () => ({ accept: ['connection', 'group'], drop, collect: collectDrop }),
     [item]
