@@ -17,6 +17,9 @@ function createWindow() {
 }
 
 app.on('ready', () => {
+  const { nativeTheme } = require('electron')
+  nativeTheme.themeSource = 'light'
+
   createWindow()
 
   app.on('activate', function () {
