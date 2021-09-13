@@ -13,9 +13,9 @@
   "scripts": {
     "serve": "poi --serve",
     "build": "poi --prod",
-    "postbuild": "copy .\\package.json .\\dist\\ && copy .\\index.js .\\dist\\",
     "start": "nodemon index.js",
-    "package:win32": "yarn build && electron-packager dist --platform=win32 --arch=x64 --overwrite --icon=public/favicon.ico"
+    "package:win32": "yarn build && electron-packager dist --platform=win32 --arch=x64 --overwrite --icon=public/favicon.ico",
+    "package:linux": "yarn build && electron-packager dist --platform=linux --arch=x64 --overwrite --icon=public/favicon.ico"
   },
   "devDependencies": {
     "@mini-utils/eslint-config-typescript": "^1.0.4",
