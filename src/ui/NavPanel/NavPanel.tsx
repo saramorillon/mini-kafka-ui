@@ -34,7 +34,7 @@ export function NavPanel(): JSX.Element {
   return (
     <DndProvider backend={HTML5Backend}>
       <Stack className={classNames.navigation}>
-        <Tree identifier="root" onItemEdit={setItem} />
+        <Tree parent="root" onItemEdit={setItem} />
         {item &&
           (isConnection(item) ? (
             <Connection connection={item} onDismiss={() => setItem(undefined)} />

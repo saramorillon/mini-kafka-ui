@@ -23,6 +23,7 @@ type ConnectionsContext = {
   openConnections: IConnection[]
   activeConnection?: string
   getItem: (key?: string) => IGroup | undefined
+  getChildren: (parent: string) => IGroup[]
   dispatch: Dispatch<Action>
 }
 
@@ -32,6 +33,7 @@ export const ConfigContext = createContext<ConnectionsContext>({
   openConnections: [],
   activeConnection: undefined,
   getItem: () => undefined,
+  getChildren: () => [],
   dispatch: () => undefined,
 })
 
@@ -50,6 +52,13 @@ export function ConfigProvider({ children }: PropsWithChildren<unknown>): JSX.El
     [config]
   )
 
+  const getChildren = useCallback(
+    (parent: string) => {
+      return [...config.connections, ...config.groups].filter((connection) => connection.parent === parent)
+    },
+    [config]
+  )
+
   return (
     <ConfigContext.Provider
       value={{
@@ -57,7 +66,8 @@ export function ConfigProvider({ children }: PropsWithChildren<unknown>): JSX.El
         connections: config.connections,
         openConnections,
         activeConnection: config.activeConnection,
-        getItem: getItem,
+        getItem,
+        getChildren,
         dispatch,
       }}
     >

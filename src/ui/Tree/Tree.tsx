@@ -1,9 +1,8 @@
 import { mergeStyleSets, Stack, useTheme } from '@fluentui/react'
-import React, { useContext, useMemo } from 'react'
+import React, { Fragment, useContext, useMemo } from 'react'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import { isConnection } from '../../models/IConnection'
-import { IGroup, isGroup } from '../../models/IGroup'
-import { ITree } from '../../models/ITree'
+import { IGroup } from '../../models/IGroup'
 import { ConnectionButton } from '../NavButton/ConnectionButton'
 import { GroupButton } from '../NavButton/GroupButton'
 
@@ -26,33 +25,32 @@ function useClassnames() {
 }
 
 interface ITreeProps {
-  identifier: keyof ITree
-  parent?: keyof ITree
+  parent: string
   onItemEdit: (item: IGroup) => void
 }
 
-export function Tree({ identifier, parent, onItemEdit }: ITreeProps): JSX.Element {
-  const { config, getItem } = useContext(ConfigContext)
+export function Tree({ parent, onItemEdit }: ITreeProps): JSX.Element {
+  const { getChildren } = useContext(ConfigContext)
   const classNames = useClassnames()
 
-  const item = getItem(identifier)
-  const items = config.tree[identifier]
+  const items = getChildren(parent)
 
   return (
     <>
-      {parent && (
-        <>
-          {isConnection(item) && <ConnectionButton parent={parent} connection={item} editItem={onItemEdit} />}
-          {isGroup(item) && <GroupButton parent={parent} group={item} editItem={onItemEdit} />}
-        </>
-      )}
-      {Boolean(items?.length) && (item?.open || !parent) && (
-        <Stack className={parent ? classNames.submenu : undefined}>
-          {items.map((item) => (
-            <Tree key={item} identifier={item} parent={identifier} onItemEdit={onItemEdit} />
-          ))}
-        </Stack>
-      )}
+      {items.map((item) => (
+        <Fragment key={item.key}>
+          {isConnection(item) ? (
+            <ConnectionButton parent={parent} connection={item} editItem={onItemEdit} />
+          ) : (
+            <GroupButton parent={parent} group={item} editItem={onItemEdit} />
+          )}
+          {item.open && (
+            <Stack className={classNames.submenu}>
+              <Tree key={item.key} parent={item.key} onItemEdit={onItemEdit} />
+            </Stack>
+          )}
+        </Fragment>
+      ))}
     </>
   )
 }

@@ -15,7 +15,7 @@ interface IGroupButtonProps {
 
 export function GroupButton({ parent, group, editItem }: IGroupButtonProps): JSX.Element {
   const { dispatch } = useContext(ConfigContext)
-  const { drag, drop } = useDnd('group', group, parent)
+  const { drag, drop } = useDnd('group', group)
 
   const [{ isDragged }, dragRef] = drag
   const [{ isOver, isStayedOver }, dropRef] = drop

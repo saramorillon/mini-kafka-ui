@@ -12,7 +12,7 @@ interface IConnectionButtonProps {
 
 export function ConnectionButton({ parent, connection, editItem }: IConnectionButtonProps): JSX.Element {
   const { dispatch } = useContext(ConfigContext)
-  const { drag } = useDnd('connection', connection, parent)
+  const { drag } = useDnd('connection', connection)
 
   const [{ isDragged }, dragRef] = drag
 
