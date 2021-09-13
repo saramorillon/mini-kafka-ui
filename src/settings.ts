@@ -9,10 +9,10 @@ function getConfigDir() {
   const { platform } = process
   switch (platform) {
     case 'win32':
-      return path.join(homedir(), 'AppData', 'Roaming', 'Mini Kafka UI')
+      return path.join(homedir(), 'AppData', 'Roaming', 'mini-kafka-ui')
     case 'darwin':
-      return path.join(homedir(), 'Library', 'Preferences')
+      return path.join(homedir(), 'Library', 'Preferences', 'mini-kafka-ui')
     default:
-      return path.join(homedir(), '.local', 'share')
+      return path.join(homedir(), '.local', 'share', 'mini-kafka-ui')
   }
 }

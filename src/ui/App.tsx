@@ -1,29 +1,23 @@
 import { Stack } from '@fluentui/react'
 import React from 'react'
-import { MemoryRouter, Route, Switch } from 'react-router-dom'
-import { ConnectionsProvider } from '../contexts/ConnectionsContext'
-import { Connection } from './Connections/Connection'
+import { MemoryRouter } from 'react-router-dom'
+import { ConfigProvider } from '../contexts/ConfigContext'
+import { Connections } from './Connections/Connections'
 import { Header } from './Header/Header'
-import { Messages } from './Messages/Messages'
 import { NavPanel } from './NavPanel/NavPanel'
 
 export function App(): JSX.Element {
   return (
-    <ConnectionsProvider>
+    <ConfigProvider>
       <MemoryRouter>
         <Stack styles={{ root: { height: '100vh' } }}>
           <Header />
-          <Stack horizontal styles={{ root: { flex: 1 } }}>
+          <Stack horizontal styles={{ root: { flex: 1, overflow: 'hidden' } }}>
             <NavPanel />
-            <div style={{ flex: 1 }}>
-              <Switch>
-                <Route exact path="/connection/:id?" component={Connection} />
-                <Route exact path="/consumer/:id?" component={Messages} />
-              </Switch>
-            </div>
+            <Connections />
           </Stack>
         </Stack>
       </MemoryRouter>
-    </ConnectionsProvider>
+    </ConfigProvider>
   )
 }

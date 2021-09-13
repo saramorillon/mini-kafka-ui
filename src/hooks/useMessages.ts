@@ -4,13 +4,13 @@ import { v4 } from 'uuid'
 import { IConnection } from '../models/IConnection'
 import { createConsumer } from '../services/Consumer'
 
-export function useMessages(connection?: IConnection): [KafkaMessage[], { loading: boolean }] {
+export function useMessages(connection: IConnection): [KafkaMessage[], { loading: boolean }] {
   const [loading, setLoading] = useState(true)
   const [consumer, setConsumer] = useState<Consumer>()
   const [messages, setMessages] = useState<KafkaMessage[]>([])
 
   useEffect(() => {
-    if (connection) createConsumer(connection.brokers, connection.topic, v4()).then(setConsumer)
+    createConsumer(connection.brokers, connection.topic, v4()).then(setConsumer)
   }, [connection])
 
   useEffect(() => {
