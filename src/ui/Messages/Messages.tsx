@@ -3,6 +3,7 @@ import {
   IColumn,
   MessageBar,
   MessageBarType,
+  PrimaryButton,
   SelectionMode,
   ShimmeredDetailsList,
   Spinner,
@@ -51,24 +52,47 @@ interface IMessagesProps {
 }
 
 export function Messages({ connection }: IMessagesProps): JSX.Element {
-  const [messages, { loading }] = useMessages(connection)
+  const [messages, { loading, connected, connect, disconnect }] = useMessages(connection)
 
   return (
     <Stack>
+      <StackItem align="end" tokens={{ padding: '0 1rem' }}>
+        <PrimaryButton onClick={connected ? disconnect : connect}>{connected ? 'Disconnect' : 'Connect'}</PrimaryButton>
+      </StackItem>
       <ShimmeredDetailsList
         items={messages}
         columns={columns}
         layoutMode={DetailsListLayoutMode.justified}
         selectionMode={SelectionMode.none}
       />
-      {loading && <Spinner size={SpinnerSize.large} />}
-      {!loading && !messages.length && (
-        <StackItem tokens={{ padding: '0 1rem' }}>
-          <MessageBar messageBarType={MessageBarType.info} isMultiline={false}>
-            No messages for now
-          </MessageBar>
-        </StackItem>
-      )}
+      <StackItem tokens={{ padding: '0 1rem' }}>
+        <MessageBody loading={loading} connected={connected} total={messages.length} />
+      </StackItem>
     </Stack>
   )
+}
+
+interface IMessageBodyProps {
+  loading: boolean
+  connected: boolean
+  total: number
+}
+
+function MessageBody({ loading, connected, total }: IMessageBodyProps) {
+  if (loading) return <Spinner size={SpinnerSize.large} />
+  if (!connected) {
+    return (
+      <MessageBar messageBarType={MessageBarType.info} isMultiline={false}>
+        Consumer is not connected
+      </MessageBar>
+    )
+  }
+  if (!total) {
+    return (
+      <MessageBar messageBarType={MessageBarType.info} isMultiline={false}>
+        No messages for now
+      </MessageBar>
+    )
+  }
+  return null
 }

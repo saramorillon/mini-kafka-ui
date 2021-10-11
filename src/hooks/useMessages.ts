@@ -1,26 +1,53 @@
-import { Consumer, KafkaMessage } from 'kafkajs'
-import { useEffect, useState } from 'react'
+import { Consumer, EachMessagePayload, KafkaMessage } from 'kafkajs'
+import { useCallback, useEffect, useState } from 'react'
 import { v4 } from 'uuid'
 import { IConnection } from '../models/IConnection'
-import { createConsumer } from '../services/Consumer'
+import { connectConsumer, createConsumer, disconnectConsumer } from '../services/Consumer'
 
-export function useMessages(connection: IConnection): [KafkaMessage[], { loading: boolean }] {
-  const [loading, setLoading] = useState(true)
+interface IConsumer {
+  loading: boolean
+  connected: boolean
+  connect: () => void
+  disconnect: () => void
+}
+
+export function useMessages(connection: IConnection): [KafkaMessage[], IConsumer] {
+  const [connected, setConnected] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [consumer, setConsumer] = useState<Consumer>()
   const [messages, setMessages] = useState<KafkaMessage[]>([])
 
   useEffect(() => {
-    createConsumer(connection.brokers, connection.topic, v4()).then(setConsumer)
+    setConsumer(createConsumer(connection.brokers, v4()))
   }, [connection])
 
-  useEffect(() => {
-    setLoading(true)
-    consumer?.on('consumer.group_join', () => setLoading(false))
-    consumer?.run({ eachMessage: async ({ message }) => setMessages((messages) => [...messages, message]) })
-    return () => {
-      consumer?.disconnect()
+  const onMessage = useCallback(async ({ message }: EachMessagePayload) => {
+    setMessages((messages) => [...messages, message])
+  }, [])
+
+  const connect = useCallback(async () => {
+    if (consumer) {
+      setLoading(true)
+      await connectConsumer(consumer, connection.topic, onMessage)
+      setLoading(false)
+      setConnected(true)
+    }
+  }, [consumer, onMessage])
+
+  const disconnect = useCallback(async () => {
+    if (consumer) {
+      setLoading(true)
+      await disconnectConsumer(consumer)
+      setLoading(false)
+      setConnected(false)
     }
   }, [consumer])
 
-  return [messages, { loading }]
+  useEffect(() => {
+    return () => {
+      disconnect()
+    }
+  }, [disconnect])
+
+  return [messages, { loading, connected, connect, disconnect }]
 }
