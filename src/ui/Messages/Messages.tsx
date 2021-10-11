@@ -11,7 +11,7 @@ import {
   Stack,
   StackItem,
 } from '@fluentui/react'
-import { KafkaMessage } from 'kafkajs'
+import { EachMessagePayload } from 'kafkajs'
 import React from 'react'
 import ReactJson from 'react-json-view'
 import { useMessages } from '../../hooks/useMessages'
@@ -19,25 +19,45 @@ import { IConnection } from '../../models/IConnection'
 
 const columns: IColumn[] = [
   {
-    key: 'key',
-    name: 'Key',
-    minWidth: 200,
-    maxWidth: 400,
+    key: 'partition',
+    name: 'Partition',
+    minWidth: 100,
+    maxWidth: 100,
     isResizable: true,
-    onRender: function Cell(message: KafkaMessage) {
-      return <span>{message.key?.toString()}</span>
+    onRender: function Cell(payload: EachMessagePayload) {
+      return <span>{payload.partition}</span>
     },
   },
   {
-    key: 'name',
-    name: 'Name',
+    key: 'offset',
+    name: 'Offset',
+    minWidth: 100,
+    maxWidth: 100,
+    isResizable: true,
+    onRender: function Cell(payload: EachMessagePayload) {
+      return <span>{payload.message.offset}</span>
+    },
+  },
+  {
+    key: 'key',
+    name: 'Key',
+    minWidth: 150,
+    maxWidth: 150,
+    isResizable: true,
+    onRender: function Cell(payload: EachMessagePayload) {
+      return <span>{payload.message.key?.toString()}</span>
+    },
+  },
+  {
+    key: 'value',
+    name: 'Value',
     minWidth: 200,
     isResizable: true,
-    onRender: function Cell(message: KafkaMessage) {
-      if (!message.value) return null
+    onRender: function Cell(payload: EachMessagePayload) {
+      if (!payload.message.value) return null
       return (
         <ReactJson
-          src={JSON.parse(message.value.toString())}
+          src={JSON.parse(payload.message.value.toString())}
           collapsed
           displayDataTypes={false}
           displayObjectSize={false}
@@ -52,7 +72,7 @@ interface IMessagesProps {
 }
 
 export function Messages({ connection }: IMessagesProps): JSX.Element {
-  const [messages, { loading, connected, connect, disconnect }] = useMessages(connection)
+  const [payloads, { loading, connected, connect, disconnect }] = useMessages(connection)
 
   return (
     <Stack>
@@ -60,13 +80,13 @@ export function Messages({ connection }: IMessagesProps): JSX.Element {
         <PrimaryButton onClick={connected ? disconnect : connect}>{connected ? 'Disconnect' : 'Connect'}</PrimaryButton>
       </StackItem>
       <ShimmeredDetailsList
-        items={messages}
+        items={payloads}
         columns={columns}
         layoutMode={DetailsListLayoutMode.justified}
         selectionMode={SelectionMode.none}
       />
       <StackItem tokens={{ padding: '0 1rem' }}>
-        <MessageBody loading={loading} connected={connected} total={messages.length} />
+        <MessageBody loading={loading} connected={connected} total={payloads.length} />
       </StackItem>
     </Stack>
   )

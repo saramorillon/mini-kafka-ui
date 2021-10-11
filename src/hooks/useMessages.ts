@@ -1,4 +1,4 @@
-import { Consumer, EachMessagePayload, KafkaMessage } from 'kafkajs'
+import { Consumer, EachMessagePayload } from 'kafkajs'
 import { useCallback, useEffect, useState } from 'react'
 import { v4 } from 'uuid'
 import { IConnection } from '../models/IConnection'
@@ -11,18 +11,18 @@ interface IConsumer {
   disconnect: () => void
 }
 
-export function useMessages(connection: IConnection): [KafkaMessage[], IConsumer] {
+export function useMessages(connection: IConnection): [EachMessagePayload[], IConsumer] {
   const [connected, setConnected] = useState(false)
   const [loading, setLoading] = useState(false)
   const [consumer, setConsumer] = useState<Consumer>()
-  const [messages, setMessages] = useState<KafkaMessage[]>([])
+  const [payloads, setPayloads] = useState<EachMessagePayload[]>([])
 
   useEffect(() => {
     setConsumer(createConsumer(connection.brokers, v4()))
   }, [connection])
 
-  const onMessage = useCallback(async ({ message }: EachMessagePayload) => {
-    setMessages((messages) => [...messages, message])
+  const onMessage = useCallback(async (payload: EachMessagePayload) => {
+    setPayloads((messages) => [...messages, payload])
   }, [])
 
   const connect = useCallback(async () => {
@@ -49,5 +49,5 @@ export function useMessages(connection: IConnection): [KafkaMessage[], IConsumer
     }
   }, [disconnect])
 
-  return [messages, { loading, connected, connect, disconnect }]
+  return [payloads, { loading, connected, connect, disconnect }]
 }
