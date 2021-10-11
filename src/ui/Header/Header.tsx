@@ -1,5 +1,4 @@
-import { CommandBar, ICommandBarItemProps, ThemeProvider } from '@fluentui/react'
-import { createTheme } from '@fluentui/style-utilities'
+import { CommandBar, ICommandBarItemProps } from '@fluentui/react'
 import openBrowser from 'open'
 import React, { useCallback, useMemo, useState } from 'react'
 import { getDefaultConnection } from '../../models/IConnection'
@@ -68,39 +67,10 @@ export function Header(): JSX.Element {
 
   return (
     <>
-      <ThemeProvider theme={commandBarTheme}>
-        <CommandBar items={items} farItems={farItems} styles={{ root: { borderBottom: '1px solid #eee' } }} />
-      </ThemeProvider>
+      <CommandBar items={items} farItems={farItems} styles={{ root: { borderBottom: '1px solid #eee' } }} />
       {modalOpen === 'connection' && <Connection connection={getDefaultConnection()} onDismiss={dismissModal} />}
       {modalOpen === 'group' && <Group group={getDefaultGroup()} onDismiss={dismissModal} />}
       <Info open={infoOpen} toggle={toggleInfo} />
     </>
   )
 }
-
-const commandBarTheme = createTheme({
-  palette: {
-    themePrimary: '#303030',
-    themeLighterAlt: '#060606',
-    themeLighter: '#0b0b0b',
-    themeLight: '#101010',
-    themeTertiary: '#161616',
-    themeSecondary: '#1b1b1b',
-    themeDarkAlt: '#202020',
-    themeDark: '#262626',
-    themeDarker: '#2b2b2b',
-    neutralLighterAlt: '#09d3b5',
-    neutralLighter: '#11d5b8',
-    neutralLight: '#1fd8bc',
-    neutralQuaternaryAlt: '#28dabf',
-    neutralQuaternary: '#2fdbc1',
-    neutralTertiaryAlt: '#4fe1cb',
-    neutralTertiary: '#101010',
-    neutralSecondary: '#161616',
-    neutralPrimaryAlt: '#1b1b1b',
-    neutralPrimary: '#303030',
-    neutralDark: '#262626',
-    black: '#2b2b2b',
-    white: '#00D1B2',
-  },
-})
