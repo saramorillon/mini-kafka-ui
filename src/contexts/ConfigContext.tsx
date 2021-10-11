@@ -8,7 +8,7 @@ import { Action, configReducer } from '../reducers/config'
 import { settings } from '../settings'
 
 const configFile = path.join(settings.configDir, 'config.json')
-const emptyConfig = { tree: { root: [] }, connections: [], groups: [] }
+const emptyConfig = { connections: [], groups: [] }
 
 function getConfig(): IConfig {
   if (!existsSync(settings.configDir)) mkdirSync(settings.configDir)
