@@ -1,12 +1,12 @@
-import { Stack, ThemeProvider } from '@fluentui/react'
+import { Divider, GlobalStyles, Stack, ThemeProvider } from '@mui/material'
 import { ipcRenderer } from 'electron'
 import React, { useEffect, useState } from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { ConfigProvider } from '../contexts/ConfigContext'
 import { darkTheme, lightTheme } from '../theme'
-import { Connections } from './Connections/Connections'
 import { Header } from './Header/Header'
 import { NavPanel } from './NavPanel/NavPanel'
+import { ActiveTabs } from './Tabs/Tabs'
 
 export function App(): JSX.Element {
   const [useDarkTheme, setUseDarkTheme] = useState(false)
@@ -18,18 +18,22 @@ export function App(): JSX.Element {
   }, [])
 
   return (
-    <ThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
-      <ConfigProvider>
-        <MemoryRouter>
-          <Stack styles={{ root: { height: '100vh' } }}>
-            <Header />
-            <Stack horizontal styles={{ root: { flex: 1, overflow: 'hidden' } }}>
-              <NavPanel />
-              <Connections />
+    <>
+      <GlobalStyles styles={{ ':root': { colorScheme: useDarkTheme ? 'dark' : 'light' } }} />
+      <ThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
+        <ConfigProvider>
+          <MemoryRouter>
+            <Stack sx={{ height: '100vh' }}>
+              <Header />
+              <Stack direction="row" sx={{ flex: 1, maxWidth: '100vw', overflow: 'hidden' }}>
+                <NavPanel />
+                <Divider orientation="vertical" />
+                <ActiveTabs />
+              </Stack>
             </Stack>
-          </Stack>
-        </MemoryRouter>
-      </ConfigProvider>
-    </ThemeProvider>
+          </MemoryRouter>
+        </ConfigProvider>
+      </ThemeProvider>
+    </>
   )
 }

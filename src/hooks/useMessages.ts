@@ -45,7 +45,9 @@ export function useMessages(connection: IConnection): [EachMessagePayload[], ICo
 
   useEffect(() => {
     return () => {
-      disconnect()
+      if (connected) {
+        disconnect()
+      }
     }
   }, [disconnect])
 

@@ -1,71 +1,22 @@
+import { CloudOff, Inbox } from '@mui/icons-material'
 import {
-  DetailsListLayoutMode,
-  IColumn,
-  MessageBar,
-  MessageBarType,
-  PrimaryButton,
-  SelectionMode,
-  ShimmeredDetailsList,
-  Spinner,
-  SpinnerSize,
+  Breadcrumbs,
+  Button,
+  CircularProgress,
+  Paper,
   Stack,
-  StackItem,
-} from '@fluentui/react'
-import { EachMessagePayload } from 'kafkajs'
-import React from 'react'
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material'
+import { Box } from '@mui/system'
+import React, { PropsWithChildren } from 'react'
 import ReactJson from 'react-json-view'
 import { useMessages } from '../../hooks/useMessages'
 import { IConnection } from '../../models/IConnection'
-
-const columns: IColumn[] = [
-  {
-    key: 'partition',
-    name: 'Partition',
-    minWidth: 100,
-    maxWidth: 100,
-    isResizable: true,
-    onRender: function Cell(payload: EachMessagePayload) {
-      return <span>{payload.partition}</span>
-    },
-  },
-  {
-    key: 'offset',
-    name: 'Offset',
-    minWidth: 100,
-    maxWidth: 100,
-    isResizable: true,
-    onRender: function Cell(payload: EachMessagePayload) {
-      return <span>{payload.message.offset}</span>
-    },
-  },
-  {
-    key: 'key',
-    name: 'Key',
-    minWidth: 150,
-    maxWidth: 150,
-    isResizable: true,
-    onRender: function Cell(payload: EachMessagePayload) {
-      return <span>{payload.message.key?.toString()}</span>
-    },
-  },
-  {
-    key: 'value',
-    name: 'Value',
-    minWidth: 200,
-    isResizable: true,
-    onRender: function Cell(payload: EachMessagePayload) {
-      if (!payload.message.value) return null
-      return (
-        <ReactJson
-          src={JSON.parse(payload.message.value.toString())}
-          collapsed
-          displayDataTypes={false}
-          displayObjectSize={false}
-        />
-      )
-    },
-  },
-]
 
 interface IMessagesProps {
   connection: IConnection
@@ -75,44 +26,83 @@ export function Messages({ connection }: IMessagesProps): JSX.Element {
   const [payloads, { loading, connected, connect, disconnect }] = useMessages(connection)
 
   return (
-    <Stack>
-      <StackItem align="end" tokens={{ padding: '0 1rem' }}>
-        <PrimaryButton onClick={connected ? disconnect : connect}>{connected ? 'Disconnect' : 'Connect'}</PrimaryButton>
-      </StackItem>
-      <ShimmeredDetailsList
-        items={payloads}
-        columns={columns}
-        layoutMode={DetailsListLayoutMode.justified}
-        selectionMode={SelectionMode.none}
-      />
-      <StackItem tokens={{ padding: '0 1rem' }}>
-        <MessageBody loading={loading} connected={connected} total={payloads.length} />
-      </StackItem>
+    <Stack spacing={3} sx={{ height: '100%', overflowY: 'auto' }}>
+      <Stack direction="row" sx={{ justifyContent: 'space-between', alignItems: 'flex-end' }}>
+        <Breadcrumbs>
+          <Typography color="inherit">{connection.name}</Typography>
+          <Typography color="text.primary">{connection.topic}</Typography>
+        </Breadcrumbs>
+        <Button onClick={connected ? disconnect : connect} variant="contained">
+          {connected ? 'Disconnect' : 'Connect'}
+        </Button>
+      </Stack>
+      <Table size="small" sx={{ tableLayout: 'fixed' }}>
+        <TableHead>
+          <TableRow>
+            <TableCell sx={{ width: 100 }}>Partition</TableCell>
+            <TableCell sx={{ width: 100 }}>Offset</TableCell>
+            <TableCell sx={{ width: 100 }}>Key</TableCell>
+            <TableCell>Value</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {payloads.map((payload) => (
+            <TableRow key={`${payload.partition}-${payload.message.offset}`}>
+              <TableCell sx={{ width: 100, verticalAlign: 'top' }}>{payload.partition}</TableCell>
+              <TableCell sx={{ width: 100, verticalAlign: 'top' }}>{payload.message.offset}</TableCell>
+              <TableCell sx={{ width: 100, verticalAlign: 'top' }}>{payload.message.key?.toString()}</TableCell>
+              <TableCell>
+                {payload.message.value && (
+                  <ReactJson
+                    src={JSON.parse(payload.message.value.toString())}
+                    name={null}
+                    collapsed
+                    displayDataTypes={false}
+                    displayObjectSize={false}
+                    theme="ashes"
+                  />
+                )}
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+      <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+        <GridOverlay loading={loading} connected={connected} empty={payloads.length === 0} />
+      </Box>
     </Stack>
   )
 }
 
-interface IMessageBodyProps {
+interface IGridOverlayProps {
   loading: boolean
   connected: boolean
-  total: number
+  empty: boolean
 }
 
-function MessageBody({ loading, connected, total }: IMessageBodyProps) {
-  if (loading) return <Spinner size={SpinnerSize.large} />
-  if (!connected) {
+function GridOverlay({ loading, connected, empty }: IGridOverlayProps): JSX.Element | null {
+  if (loading) return <CircularProgress size="1rem" />
+  if (!connected)
     return (
-      <MessageBar messageBarType={MessageBarType.info} isMultiline={false}>
-        Consumer is not connected
-      </MessageBar>
+      <Message>
+        <CloudOff sx={{ mr: 1 }} /> Consumer is not connected
+      </Message>
     )
-  }
-  if (!total) {
+  if (empty)
     return (
-      <MessageBar messageBarType={MessageBarType.info} isMultiline={false}>
-        No messages for now
-      </MessageBar>
+      <Message>
+        <Inbox sx={{ mr: 1 }} /> No messages for now
+      </Message>
     )
-  }
   return null
+}
+
+function Message({ children }: PropsWithChildren<unknown>) {
+  return (
+    <Paper variant="outlined" sx={{ p: 2 }}>
+      <Typography color="text.disabled" sx={{ display: 'flex', alignItems: 'center' }}>
+        {children}
+      </Typography>
+    </Paper>
+  )
 }

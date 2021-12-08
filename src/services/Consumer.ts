@@ -13,7 +13,7 @@ export async function connectConsumer(
 ): Promise<void> {
   await consumer.connect()
   await consumer.subscribe({ topic })
-  consumer.run({ eachMessage: onMessage })
+  consumer.run({ autoCommit: false, eachMessage: onMessage })
   return new Promise((resolve) => {
     consumer.on('consumer.group_join', resolve)
   })

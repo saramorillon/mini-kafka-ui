@@ -1,6 +1,7 @@
-import { Dialog, DialogType, FontIcon, Link, Stack } from '@fluentui/react'
+import { GitHub, Language } from '@mui/icons-material'
+import { Dialog, DialogTitle, Link, Stack } from '@mui/material'
 import React from 'react'
-import { name, author, version, repository } from '../../../package.json'
+import { author, name, repository, version } from '../../../package.json'
 
 interface IInfoProps {
   open: boolean
@@ -11,21 +12,17 @@ export function Info({ open, toggle }: IInfoProps): JSX.Element | null {
   if (!open) return null
 
   return (
-    <Dialog
-      hidden={!open}
-      onDismiss={toggle}
-      dialogContentProps={{ type: DialogType.largeHeader, title: 'Info' }}
-      maxWidth={500}
-    >
-      <Stack tokens={{ childrenGap: '0.5rem' }}>
+    <Dialog onClose={toggle} open={open}>
+      <DialogTitle>Information</DialogTitle>
+      <Stack spacing={2}>
         <span>
           <b>{name}</b> v{version}
         </span>
         <Link href={repository.url}>
-          <FontIcon iconName="GitGraph" /> {repository.url}
+          <GitHub /> {repository.url}
         </Link>
         <Link href={author.url}>
-          <FontIcon iconName="Globe" /> {author.url}
+          <Language /> {author.url}
         </Link>
         <span>
           &copy; {author.name} {new Date().getFullYear()}

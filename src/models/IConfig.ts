@@ -1,8 +1,8 @@
 import { IConnection } from './IConnection'
-import { IGroup } from './IGroup'
+import { IServer } from './IServer'
 
 export interface IConfig {
-  activeConnection?: string
-  groups: IGroup[]
-  connections: IConnection[]
+  servers: IServer[]
+  openItems: (IServer | IConnection)[]
+  activeItem?: string
 }

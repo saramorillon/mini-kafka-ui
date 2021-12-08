@@ -1,18 +1,15 @@
 import { IConfig } from '../models/IConfig'
-import { copyConnection, deleteConnection, IConnection, isConnection, saveConnection } from '../models/IConnection'
-import { copyGroup, deleteGroup, IGroup, saveGroup } from '../models/IGroup'
+import { IConnection, isConnection } from '../models/IConnection'
+import { deleteServer, IServer, saveServer } from '../models/IServer'
+import { replaceAt } from '../utils/replaceAt'
 
 export type Action =
-  | { type: 'save'; item: IConnection }
-  | { type: 'save'; item: IGroup }
-  | { type: 'delete'; item: IConnection }
-  | { type: 'delete'; item: IGroup }
-  | { type: 'copy'; item: IConnection }
-  | { type: 'copy'; item: IGroup }
+  | { type: 'save'; item: IServer }
+  | { type: 'delete'; item: IServer }
+  | { type: 'open'; item: IServer }
   | { type: 'open'; item: IConnection }
+  | { type: 'close'; item: IServer }
   | { type: 'close'; item: IConnection }
-  | { type: 'toggle'; item: IGroup }
-  | { type: 'move'; item: IGroup; parent: string }
 
 export function configReducer(config: IConfig, action: Action): IConfig {
   switch (action.type) {
@@ -20,42 +17,37 @@ export function configReducer(config: IConfig, action: Action): IConfig {
       return saveItem(config, action.item)
     case 'delete':
       return deleteItem(config, action.item)
-    case 'copy':
-      return copyItem(config, action.item)
     case 'open':
       return openItem(config, action.item)
     case 'close':
       return closeItem(config, action.item)
-    case 'toggle':
-      return toggleItem(config, action.item)
-    case 'move':
-      return saveItem(config, { ...action.item, parent: action.parent })
   }
 }
 
-function saveItem(config: IConfig, item: IGroup | IConnection): IConfig {
-  if (isConnection(item)) return saveConnection(config, item)
-  return saveGroup(config, item)
+function saveItem(config: IConfig, item: IServer): IConfig {
+  return openItem(saveServer(config, item), item)
 }
 
-function deleteItem(config: IConfig, item: IGroup | IConnection): IConfig {
-  if (isConnection(item)) return deleteConnection(config, item)
-  return deleteGroup(config, item)
+function deleteItem(config: IConfig, item: IServer): IConfig {
+  return closeItem(deleteServer(config, item), item)
 }
 
-function copyItem(config: IConfig, item: IGroup | IConnection): IConfig {
-  if (isConnection(item)) return copyConnection(config, item)
-  return copyGroup(config, item)
+function openItem(config: IConfig, item: IServer | IConnection): IConfig {
+  const index = findIndex(config, item)
+  return { ...config, openItems: replaceAt(config.openItems, index, item), activeItem: item.key }
 }
 
-function openItem(config: IConfig, item: IGroup | IConnection): IConfig {
-  return saveItem({ ...config, activeConnection: item.key }, { ...item, open: true })
+function closeItem(config: IConfig, item: IServer | IConnection): IConfig {
+  const index = findIndex(config, item)
+  let activeItem = config.activeItem
+  if (config.activeItem === item.key) {
+    activeItem = (config.openItems[index - 1] || config.openItems[index + 1])?.key
+  }
+  return { ...config, openItems: replaceAt(config.openItems, index), activeItem }
 }
 
-function closeItem(config: IConfig, item: IGroup | IConnection): IConfig {
-  return saveItem({ ...config, activeConnection: undefined }, { ...item, open: false })
-}
-
-function toggleItem(config: IConfig, item: IGroup): IConfig {
-  return item.open ? closeItem(config, item) : openItem(config, item)
+function findIndex(config: IConfig, item: IServer | IConnection): number {
+  return config.openItems.findIndex((openItem) => {
+    return (isConnection(openItem) && isConnection(item) && openItem.topic === item.topic) || openItem.key === item.key
+  })
 }
