@@ -14,11 +14,13 @@
     "serve": "poi --serve",
     "build": "poi --prod",
     "start": "nodemon index.js",
+    "lint": "eslint \"src/**/*.ts\"",
+    "format": "prettier --write \"src/**/*.ts\"",
     "package:win32": "yarn build && electron-packager dist --platform=win32 --arch=x64 --overwrite --icon=public/favicon.ico",
     "package:linux": "yarn build && electron-packager dist --platform=linux --arch=x64 --overwrite --icon=public/favicon.ico"
   },
   "devDependencies": {
-    "@mini-utils/eslint-config-typescript": "^1.0.4",
+    "@mini-utils/eslint-config-typescript": "^1.0.7",
     "@poi/plugin-typescript": "^12.3.1",
     "@types/node": "^16.6.1",
     "@types/react": "^17.0.18",
@@ -50,6 +52,7 @@
     "@mui/lab": "^5.0.0-alpha.57",
     "@mui/material": "^5.2.1",
     "@mui/x-data-grid": "^5.0.1",
+    "@saramorillon/hooks": "^1.1.2",
     "kafkajs": "^1.15.0",
     "kafkajs-lz4": "^2.0.0-beta.0",
     "open": "^8.2.1",

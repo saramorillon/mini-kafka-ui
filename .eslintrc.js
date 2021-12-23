@@ -13,7 +13,6 @@ module.exports = {
     '@mini-utils/eslint-config-typescript/react',
     '@mini-utils/eslint-config-typescript/jest',
     '@mini-utils/eslint-config-typescript/jest-react',
-    '@mini-utils/eslint-config-typescript/path-alias',
   ],
   rules: {
     'import/no-named-as-default-member': 'off',

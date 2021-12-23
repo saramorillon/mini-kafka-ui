@@ -1,6 +1,6 @@
-import { Divider, GlobalStyles, Stack, ThemeProvider } from '@mui/material'
-import { ipcRenderer } from 'electron'
-import React, { useEffect, useState } from 'react'
+import { Divider, Stack, ThemeProvider } from '@mui/material'
+import { useTheme } from '@saramorillon/hooks'
+import React from 'react'
 import { MemoryRouter } from 'react-router-dom'
 import { ConfigProvider } from '../contexts/ConfigContext'
 import { darkTheme, lightTheme } from '../theme'
@@ -9,18 +9,11 @@ import { NavPanel } from './NavPanel/NavPanel'
 import { ActiveTabs } from './Tabs/Tabs'
 
 export function App(): JSX.Element {
-  const [useDarkTheme, setUseDarkTheme] = useState(false)
-
-  useEffect(() => {
-    ipcRenderer.on('theme', function (evt, { useDarkTheme }) {
-      setUseDarkTheme(useDarkTheme)
-    })
-  }, [])
+  const theme = useTheme()
 
   return (
     <>
-      <GlobalStyles styles={{ ':root': { colorScheme: useDarkTheme ? 'dark' : 'light' } }} />
-      <ThemeProvider theme={useDarkTheme ? darkTheme : lightTheme}>
+      <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
         <ConfigProvider>
           <MemoryRouter>
             <Stack sx={{ height: '100vh' }}>

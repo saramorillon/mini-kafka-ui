@@ -1,6 +1,7 @@
 import { Save } from '@mui/icons-material'
 import { Button, TextField } from '@mui/material'
-import React, { FormEvent, useCallback, useContext, useEffect, useState } from 'react'
+import { fields } from '@saramorillon/hooks'
+import React, { FormEvent, useCallback, useContext } from 'react'
 import { ConfigContext } from '../../contexts/ConfigContext'
 import { IServer } from '../../models/IServer'
 
@@ -11,13 +12,8 @@ interface IServerProps {
 export function Server({ server }: IServerProps): JSX.Element {
   const { dispatch } = useContext(ConfigContext)
 
-  const [name, setName] = useState<string>('')
-  const [brokers, setBrokers] = useState<string[]>([])
-
-  useEffect(() => {
-    setName(server.name)
-    setBrokers(server.brokers)
-  }, [server])
+  const [name, setName] = fields.useText(server.name)
+  const [brokers, setBrokers] = fields.useMultiSelect(server.brokers)
 
   const onSubmit = useCallback(
     (e: FormEvent) => {

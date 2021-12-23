@@ -13,17 +13,19 @@ import {
   Typography,
 } from '@mui/material'
 import { Box } from '@mui/system'
-import React, { PropsWithChildren } from 'react'
+import React, { PropsWithChildren, useState } from 'react'
 import ReactJson from 'react-json-view'
-import { useMessages } from '../../hooks/useMessages'
+import { useConsumer } from '../../hooks/useConsumer'
 import { IConnection } from '../../models/IConnection'
+import { Producer } from '../Producer/Producer'
 
 interface IMessagesProps {
   connection: IConnection
 }
 
 export function Messages({ connection }: IMessagesProps): JSX.Element {
-  const [payloads, { loading, connected, connect, disconnect }] = useMessages(connection)
+  const [payloads, { loading, connected, connect, disconnect }] = useConsumer(connection)
+  const [open, setOpen] = useState(false)
 
   return (
     <Stack spacing={3} sx={{ height: '100%', overflowY: 'auto' }}>
@@ -32,10 +34,16 @@ export function Messages({ connection }: IMessagesProps): JSX.Element {
           <Typography color="inherit">{connection.name}</Typography>
           <Typography color="text.primary">{connection.topic}</Typography>
         </Breadcrumbs>
-        <Button onClick={connected ? disconnect : connect} variant="contained">
-          {connected ? 'Disconnect' : 'Connect'}
-        </Button>
+        <div>
+          <Button onClick={connected ? disconnect : connect} variant="contained">
+            {connected ? 'Disconnect consumer' : 'Connect consumer'}
+          </Button>
+          <Button onClick={() => setOpen(true)} variant="contained" sx={{ ml: '0.5rem' }}>
+            Send a message
+          </Button>
+        </div>
       </Stack>
+      <Producer connection={connection} open={open} toggle={() => setOpen(false)} />
       <Table size="small" sx={{ tableLayout: 'fixed' }}>
         <TableHead>
           <TableRow>

@@ -1223,10 +1223,10 @@
   dependencies:
     cross-spawn "^7.0.1"
 
-"@mini-utils/eslint-config-typescript@^1.0.4":
-  version "1.0.4"
-  resolved "https://registry.yarnpkg.com/@mini-utils/eslint-config-typescript/-/eslint-config-typescript-1.0.4.tgz#d6ece4fc0e3bd747d5a2e6036e7d3f41c5ea9066"
-  integrity sha512-D4cRBsJpnQcl5t0eqjXqbFwWRt36zaZtMOHitcGprOHevQaMnxBjuzvNNebHo0HeZInhFomio2lZYz2sEJlhbw==
+"@mini-utils/eslint-config-typescript@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@mini-utils/eslint-config-typescript/-/eslint-config-typescript-1.0.7.tgz#f414d807f1dbf72765187a20085b3ddf98e76865"
+  integrity sha512-JS23g2sPTFOU/9bQtwyxk5+nsVfsko1y2pTSARP5MGFA6PM9DD482JgqdNwvveIdNslzeM61KIn5m/m8cEo9UA==
 
 "@mui/base@5.0.0-alpha.57":
   version "5.0.0-alpha.57"
@@ -1435,6 +1435,11 @@
   version "2.11.0"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.11.0.tgz#6734f8ebc106a0860dff7f92bf90df193f0935d7"
   integrity sha512-zrsUxjLOKAzdewIDRWy9nsV1GQsKBCWaGwsZQlCgr6/q+vjyZhFgqedLfFBuI9anTPEUT4APq9Mu0SZBTzIcGQ==
+
+"@saramorillon/hooks@^1.1.2":
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/@saramorillon/hooks/-/hooks-1.1.2.tgz#a025af4ac37b1692fd74337408fda61526854027"
+  integrity sha512-fnf4mlg4vZvRLURkZeYddZDMt9D5LGBRzLuZuV7axUwykwSeF7T0yhW3TGEJeWCUeCI6n3UaedXrFsUVS4C4VQ==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
