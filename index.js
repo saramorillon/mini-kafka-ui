@@ -1,4 +1,4 @@
-const { app, BrowserWindow, nativeTheme } = require('electron')
+const { app, BrowserWindow } = require('electron')
 const path = require('path')
 
 function createWindow() {
@@ -14,9 +14,6 @@ function createWindow() {
   } else {
     mainWindow.loadFile(path.join(process.cwd(), 'resources', 'app', 'index.html'))
   }
-  mainWindow.webContents.on('did-finish-load', () => {
-    mainWindow.webContents.send('theme', { useDarkTheme: nativeTheme.shouldUseDarkColors })
-  })
 }
 
 app.on('ready', () => {

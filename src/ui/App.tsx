@@ -1,3 +1,4 @@
+import { Global } from '@emotion/react'
 import { Divider, Stack, ThemeProvider } from '@mui/material'
 import { useTheme } from '@saramorillon/hooks'
 import React from 'react'
@@ -13,6 +14,7 @@ export function App(): JSX.Element {
 
   return (
     <>
+      <Global styles={{ html: { backgroundColor: theme === 'dark' ? '#202020' : '#dfdfdf' } }} />
       <ThemeProvider theme={theme === 'dark' ? darkTheme : lightTheme}>
         <ConfigProvider>
           <MemoryRouter>
