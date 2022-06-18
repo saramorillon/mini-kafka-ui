@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from 'electron'
+import { app, BrowserWindow, shell } from 'electron'
 import { promises } from 'fs'
 import path from 'path'
 import { getConfig, updateConfig } from './controllers/config'
@@ -10,7 +10,7 @@ let timeout: NodeJS.Timeout
 function updateWindow(win: BrowserWindow) {
   clearTimeout(timeout)
   timeout = setTimeout(() => {
-    updateConfig({
+    void updateConfig({
       window: {
         maximized: win.isMaximized(),
         x: win.getPosition()[0],
@@ -47,6 +47,16 @@ async function createWindow() {
   win.on('unmaximize', () => updateWindow(win))
   win.on('moved', () => updateWindow(win))
   win.on('resized', () => updateWindow(win))
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    void shell.openExternal(url)
+    return { action: 'deny' }
+  })
+  win.webContents.on('before-input-event', (e, input) => {
+    if (input.type === 'keyDown') {
+      if (input.key === 'F5') win.reload()
+      if (process.env.NODE_ENV === 'dev' && input.key === 'F12') win.webContents.toggleDevTools()
+    }
+  })
 }
 
 app.on('ready', () => createWindow())
