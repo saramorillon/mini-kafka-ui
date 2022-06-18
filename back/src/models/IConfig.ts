@@ -8,5 +8,5 @@ export interface IConfig {
     height?: number
     maximized?: boolean
   }
-  servers: IServer[]
+  servers: Record<string, IServer>
 }

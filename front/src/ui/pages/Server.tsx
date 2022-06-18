@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom'
 import { ServersContext } from '../../contexts/ServersContext'
 import { useNavigate } from '../../hooks/useNavigate'
 import { IServer } from '../../models/IServer'
-import { deleteServer, getServer } from '../../services/server'
+import { getServer } from '../../services/server'
 import { Loader } from '../components/Helpers'
 
 const empty: IServer = {
@@ -18,13 +18,11 @@ export function Server() {
   const { key } = useParams<{ key: string }>()
   const fetch = useCallback(() => getServer(key), [key])
   const [server, { loading }, refresh] = useFetch(fetch, undefined)
-  const { saveServer } = useContext(ServersContext)
+  const { saveServer, deleteServer } = useContext(ServersContext)
   const navigate = useNavigate(refresh)
 
   const onSave = useCallback(
-    (values: IServer) => {
-      void saveServer(values).then(() => navigate(`/servers`))
-    },
+    (values: IServer) => saveServer(values).then(() => navigate(`/servers`)),
     [saveServer, navigate]
   )
 
@@ -35,10 +33,8 @@ export function Server() {
   }, [reset])
 
   const onDelete = useCallback(
-    (server: IServer) => {
-      void deleteServer(server).then(() => navigate('/servers'))
-    },
-    [navigate]
+    (server: IServer) => deleteServer(server).then(() => navigate('/servers')),
+    [deleteServer, navigate]
   )
 
   if (loading) {

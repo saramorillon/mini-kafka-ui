@@ -9,8 +9,9 @@ let timeout: NodeJS.Timeout
 
 function updateWindow(win: BrowserWindow) {
   clearTimeout(timeout)
-  timeout = setTimeout(() => {
-    void updateConfig({
+  timeout = setTimeout(async () => {
+    const { servers } = await getConfig()
+    await updateConfig({
       window: {
         maximized: win.isMaximized(),
         x: win.getPosition()[0],
@@ -18,6 +19,7 @@ function updateWindow(win: BrowserWindow) {
         width: win.getSize()[0],
         height: win.getSize()[1],
       },
+      servers,
     })
   }, 250)
 }
