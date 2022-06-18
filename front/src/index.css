@@ -1,0 +1,18 @@
+/* svg {
+  height: 1rem;
+} */
+
+:root {
+  --palette-primary: #f03e71;
+  --palette-background: #303030;
+  --palette-foreground: #fcfdff;
+  --palette-foreground-muted: #888889;
+  --palette-border: #6b6b6c;
+
+  --max-body-width: 100%;
+}
+
+html {
+  background-color: var(--palette-background);
+  color: var(--palette-foreground);
+}
