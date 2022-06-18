@@ -5,12 +5,15 @@ export function getServers(): Promise<IServer[]> {
   return ipcRenderer.invoke('get-servers')
 }
 
-export async function getServer(key?: string): Promise<IServer | undefined> {
-  if (key) {
-    return ipcRenderer.invoke('get-server', key)
-  }
+export function getServer(key?: string): Promise<IServer | undefined> {
+  if (key) return ipcRenderer.invoke('get-server', key)
+  return Promise.resolve(undefined)
 }
 
-export async function saveServer(data: Partial<IServer>): Promise<void> {
+export function saveServer(data: Partial<IServer>): Promise<void> {
   return ipcRenderer.invoke('save-server', data)
+}
+
+export function deleteServer(data: Partial<IServer>): Promise<void> {
+  return ipcRenderer.invoke('delete-server', data)
 }
