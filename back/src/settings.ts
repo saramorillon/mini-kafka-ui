@@ -1,8 +1,10 @@
 import { homedir } from 'os'
 import path from 'path'
+import { name } from '../package.json'
 
 export const settings = {
   configDir: getConfigDir(),
+  clientId: name,
 }
 
 function getConfigDir() {
