@@ -1,6 +1,6 @@
 import { shell } from 'electron'
 import { promises } from 'fs'
-import merge from 'lodash.merge'
+import merge from 'lodash.mergewith'
 import path from 'path'
 import { IConfig } from '../models/IConfig'
 import { settings } from '../settings'
@@ -8,7 +8,7 @@ import { settings } from '../settings'
 const configFile = path.join(settings.configDir, 'config.json')
 
 export function openConfigDir(): void {
-  shell.openPath(settings.configDir)
+  void shell.openPath(settings.configDir)
 }
 
 export async function getConfig(): Promise<IConfig> {
@@ -24,5 +24,9 @@ export async function getConfig(): Promise<IConfig> {
 
 export async function updateConfig(config: Partial<IConfig>): Promise<void> {
   const baseConfig = await getConfig()
-  await promises.writeFile(configFile, JSON.stringify(merge(baseConfig, config)), 'utf8')
+  await promises.writeFile(configFile, JSON.stringify(merge(baseConfig, config, customizer)), 'utf8')
+}
+
+function customizer(objValue: unknown, srcValue: unknown) {
+  if (Array.isArray(objValue)) return objValue.concat(srcValue)
 }
