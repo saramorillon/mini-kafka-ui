@@ -4,7 +4,7 @@ import { ITopic } from '../models/ITopic'
 import { settings } from '../settings'
 import { getConfig } from './config'
 
-export async function getTopics(event: IpcMainInvokeEvent, key: string) {
+export async function getTopics(event: IpcMainInvokeEvent, key: string, page: number, limit: number, filter: string) {
   const config = await getConfig()
   const { brokers } = config.servers[key] || { brokers: [] }
   const client = new Kafka({ brokers, clientId: settings.clientId })
@@ -12,9 +12,11 @@ export async function getTopics(event: IpcMainInvokeEvent, key: string) {
   await admin.connect()
   const result: ITopic[] = []
   const topics = await admin.listTopics()
-  for (const topic of topics) {
+  for (const topic of topics
+    .filter((topic) => topic.toLowerCase().includes(filter.toLowerCase()))
+    .slice((page - 1) * limit, page * limit)) {
     const offsets = await admin.fetchTopicOffsets(topic)
     result.push({ name: topic, offsets })
   }
-  return result
+  return { topics: result, total: topics.length }
 }

@@ -29,7 +29,7 @@ export function Servers() {
           />
 
           <Link to="/server">
-            <IconPlus /> Create server
+            <IconPlus /> Add server
           </Link>
         </div>
 

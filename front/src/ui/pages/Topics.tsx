@@ -1,21 +1,20 @@
 import { useFetch } from '@saramorillon/hooks'
 import { IconList } from '@tabler/icons'
-import React, { useCallback, useContext, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { ServersContext } from '../../contexts/ServersContext'
 import { getTopics } from '../../services/topic'
 import { LoadContainer } from '../components/LoadContainer'
 
+const limit = 10
+
 export function Topics() {
   const { servers } = useContext(ServersContext)
-  const [server, setServer] = useState(servers[0].key)
-  const fetch = useCallback(() => getTopics(server), [server])
-  const [allTopics, { loading, error }] = useFetch(fetch, [])
+  const [server, setServer] = useState(servers[0]?.key || '')
 
+  const [page, setPage] = useState(1)
   const [filter, setFilter] = useState('')
-  const topics = useMemo(
-    () => allTopics.filter((topic) => topic.name.toLowerCase().includes(filter.toLowerCase())),
-    [allTopics, filter]
-  )
+  const fetch = useCallback(() => getTopics(server, page, limit, filter), [server, page, filter])
+  const [{ topics, total }, { loading, error }] = useFetch(fetch, { topics: [], total: 0 })
 
   return (
     <>
@@ -46,11 +45,17 @@ export function Topics() {
         </div>
 
         <LoadContainer loading={loading} error={error}>
-          <ul>
-            {topics.map((topic) => (
-              <li key={topic.name}>{topic.name}</li>
-            ))}
-          </ul>
+          <table>
+            <tbody>
+              {topics.map((topic) => (
+                <tr key={topic.name}>
+                  <td>{topic.name}</td>
+                  {/* <td>{topic.offsets.map(offset => offset.)}</td> */}
+                  {/* <td>{topic.name}</td> */}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </LoadContainer>
       </main>
     </>
