@@ -1,8 +1,9 @@
 import { ipcMain } from 'electron'
 import { getApp } from './controllers/app'
 import { openConfigDir } from './controllers/config'
+import { startConsumer, stopConsumer } from './controllers/consumer'
 import { deleteServer, getServer, getServers, saveServer } from './controllers/server'
-import { getTopics } from './controllers/topic'
+import { getFavoriteTopics, getTopics, toggleTopicFavorite } from './controllers/topic'
 
 ipcMain.handle('get-app', getApp)
 
@@ -14,3 +15,8 @@ ipcMain.handle('save-server', saveServer)
 ipcMain.handle('delete-server', deleteServer)
 
 ipcMain.handle('get-topics', getTopics)
+ipcMain.handle('get-favorite-topics', getFavoriteTopics)
+ipcMain.handle('toggle-topic-favorite', toggleTopicFavorite)
+
+ipcMain.handle('start-consumer', startConsumer)
+ipcMain.handle('stop-consumer', stopConsumer)

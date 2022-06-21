@@ -15,7 +15,7 @@ export async function getConfig(): Promise<IConfig> {
     const input = await promises.readFile(configFile, 'utf8')
     return JSON.parse(input)
   } catch (error) {
-    const config: IConfig = { window: { x: 0, y: 0, maximized: true }, servers: {} }
+    const config: IConfig = { window: { x: 0, y: 0, maximized: true }, servers: {}, favorites: [] }
     await promises.writeFile(configFile, JSON.stringify(config), 'utf8')
     return config
   }

@@ -1,22 +1,35 @@
 import { IpcMainInvokeEvent } from 'electron'
-import { Kafka } from 'kafkajs'
-import { ITopic } from '../models/ITopic'
-import { settings } from '../settings'
-import { getConfig } from './config'
+import { getClient } from '../services/kafka'
+import { getConfig, updateConfig } from './config'
 
-export async function getTopics(event: IpcMainInvokeEvent, key: string, page: number, limit: number, filter: string) {
-  const config = await getConfig()
-  const { brokers } = config.servers[key] || { brokers: [] }
-  const client = new Kafka({ brokers, clientId: settings.clientId })
+export async function getTopics(event: IpcMainInvokeEvent, server: string) {
+  const { favorites } = await getConfig()
+  const client = await getClient(server)
   const admin = client.admin()
   await admin.connect()
-  const result: ITopic[] = []
-  const topics = await admin.listTopics()
-  for (const topic of topics
-    .filter((topic) => topic.toLowerCase().includes(filter.toLowerCase()))
-    .slice((page - 1) * limit, page * limit)) {
-    const offsets = await admin.fetchTopicOffsets(topic)
-    result.push({ name: topic, offsets })
+  const { topics } = await admin.fetchTopicMetadata()
+  return topics.map((topic) => ({
+    name: topic.name,
+    partitions: topic.partitions.length,
+    favorite: favorites.findIndex((favorite) => favorite.server === server && favorite.topic === topic.name) !== -1,
+  }))
+}
+
+export async function getFavoriteTopics() {
+  const { servers, favorites } = await getConfig()
+  return favorites.map((favorite) => ({
+    server: servers[favorite.server],
+    name: favorite.topic,
+  }))
+}
+
+export async function toggleTopicFavorite(event: IpcMainInvokeEvent, server: string, topic: string) {
+  const { window, servers, favorites } = await getConfig()
+  const index = favorites.findIndex((favorite) => favorite.server === server && favorite.topic === topic)
+  if (index !== -1) {
+    favorites.splice(index, 1)
+  } else {
+    favorites.push({ server, topic })
   }
-  return { topics: result, total: topics.length }
+  await updateConfig({ window, servers, favorites })
 }

@@ -406,10 +406,10 @@
   resolved "https://registry.yarnpkg.com/@saramorillon/eslint-config-typescript/-/eslint-config-typescript-1.1.0.tgz#2758b8cac6e24c7d80c7c77f795f16d94148e5ae"
   integrity sha512-biU8SgXZRCcrdpLJ9nAuqBppr6ZB1MHjqBWzgg/+TkAUhuul9O4n0H7WirCH/lUMjepsfuz4tSHesyBKUc2fbw==
 
-"@saramorillon/hooks@^2.3.1":
-  version "2.3.1"
-  resolved "https://registry.yarnpkg.com/@saramorillon/hooks/-/hooks-2.3.1.tgz#7f1c9ff6c598adb48d0cb6ba117d8467ad14bde4"
-  integrity sha512-Vd5KzCxCmyML3u+1tbUXAHdKiZkM00m1SKGROYITIfa7+3htTH2x8JOr9Oz0EzCa5L3mWMO8r90GbyzGD0le5w==
+"@saramorillon/hooks@^2.4.0":
+  version "2.4.0"
+  resolved "https://registry.yarnpkg.com/@saramorillon/hooks/-/hooks-2.4.0.tgz#d0ef8ef62d5835c15187bcac0b436354322532e9"
+  integrity sha512-HSHTf5pOveh+2/AaxYL/I48MFtAraPS667VIjxKROhoWBEH6xdJp+Ffe+5oRcxu1j29R7mAj6wT5zeqjF+q3TQ==
 
 "@sindresorhus/is@^0.14.0":
   version "0.14.0"
@@ -1960,6 +1960,11 @@ jsonfile@^4.0.0:
   dependencies:
     array-includes "^3.1.3"
     object.assign "^4.1.2"
+
+kafkajs@^2.0.2:
+  version "2.0.2"
+  resolved "https://registry.yarnpkg.com/kafkajs/-/kafkajs-2.0.2.tgz#cdfc8f57aa4fd69f6d9ca1cce4ee89bbc2a3a1f9"
+  integrity sha512-g6CM3fAenofOjR1bfOAqeZUEaSGhNtBscNokybSdW1rmIKYNwBPC9xQzwulFJm36u/xcxXUiCl/L/qfslapihA==
 
 keyv@^3.0.0:
   version "3.1.0"

@@ -15,13 +15,13 @@ export async function getServer(event: IpcMainInvokeEvent, key: string) {
 
 export async function saveServer(event: IpcMainInvokeEvent, server: IServer) {
   if (!server.key) server.key = randomUUID()
-  const { window, servers } = await getConfig()
+  const { window, servers, favorites } = await getConfig()
   servers[server.key] = server
-  await updateConfig({ window, servers })
+  await updateConfig({ window, servers, favorites })
 }
 
 export async function deleteServer(event: IpcMainInvokeEvent, server: IServer) {
-  const { window, servers } = await getConfig()
+  const { window, servers, favorites } = await getConfig()
   delete servers[server.key]
-  await updateConfig({ window, servers })
+  await updateConfig({ window, servers, favorites })
 }

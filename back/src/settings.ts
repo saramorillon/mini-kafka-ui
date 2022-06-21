@@ -4,6 +4,7 @@ import { name } from '../package.json'
 
 export const settings = {
   configDir: getConfigDir(),
+  groupId: name,
   clientId: name,
 }
 

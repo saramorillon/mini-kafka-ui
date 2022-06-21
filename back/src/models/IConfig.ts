@@ -9,4 +9,8 @@ export interface IConfig {
     maximized?: boolean
   }
   servers: Record<string, IServer>
+  favorites: {
+    server: string
+    topic: string
+  }[]
 }
