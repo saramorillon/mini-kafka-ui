@@ -1,7 +1,7 @@
 import { IconDatabase, IconList, IconSettings } from '@tabler/icons'
 import { ipcRenderer } from 'electron'
 import React, { MouseEvent, useCallback } from 'react'
-import { NavLink } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 
 export function Navbar(): JSX.Element {
   const onOpenConfig = useCallback((e: MouseEvent) => {
@@ -11,11 +11,11 @@ export function Navbar(): JSX.Element {
 
   return (
     <nav aria-label="Main">
-      <a href="/">
+      <Link to="/">
         <strong>
           <img src="/favicon.svg" className="icon" /> Mini Kafka UI
         </strong>
-      </a>
+      </Link>
       <NavLink to="/topics">
         <IconList /> Topics
       </NavLink>

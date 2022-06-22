@@ -1,9 +1,11 @@
 import { usePagination } from '@saramorillon/hooks'
 import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconList } from '@tabler/icons'
+import { fromUnixTime, parseISO } from 'date-fns'
 import { ipcRenderer } from 'electron'
-import { EachMessagePayload } from 'kafkajs'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { Navigate, useParams } from 'react-router-dom'
+import { IMessage } from '../../models/IMessage'
+import { Loader } from '../components/Helpers'
 
 const limit = 10
 
@@ -24,7 +26,13 @@ interface IMessagesProps {
 
 function Messages({ serverKey, topic }: IMessagesProps) {
   const { page, setMaxPage, maxPage, first, previous, next, last, canPrevious, canNext, goTo } = usePagination()
-  const [messages, setMessages] = useState<EachMessagePayload[]>([])
+  const [allMessages, setMessages] = useState<IMessage[]>([])
+
+  const [partition, setPartition] = useState('')
+  const [offset, setOffset] = useState('')
+  const [date, setDate] = useState('')
+  const [key, setKey] = useState('')
+  const [value, setValue] = useState('')
 
   useEffect(() => {
     void ipcRenderer.invoke('start-consumer', serverKey, topic)
@@ -36,9 +44,28 @@ function Messages({ serverKey, topic }: IMessagesProps) {
     }
   }, [serverKey, topic])
 
+  const filteredMessages = useMemo(
+    () =>
+      allMessages.filter(
+        (message) =>
+          (!partition || message.partition.toString() === partition) &&
+          (!offset || message.offset === offset) &&
+          (!date || message.timestamp > parseISO(date).getTime()) &&
+          (!key || message.key?.toLowerCase().includes(key.toLowerCase())) &&
+          (!value || message.value.toLowerCase().includes(value?.toLowerCase()))
+      ),
+    [allMessages, partition, offset, date, key, value]
+  )
+
   useEffect(() => {
-    setMaxPage(Math.ceil(messages.length / limit))
-  }, [messages, setMaxPage])
+    goTo(1)
+  }, [goTo, partition, offset, date, key, value])
+
+  useEffect(() => {
+    setMaxPage(Math.ceil(filteredMessages.length / limit))
+  }, [filteredMessages, setMaxPage])
+
+  const messages = useMemo(() => filteredMessages.slice((page - 1) * limit, page * limit), [filteredMessages, page])
 
   return (
     <>
@@ -48,26 +75,6 @@ function Messages({ serverKey, topic }: IMessagesProps) {
         </h1>
       </header>
       <main>
-        {/* <div className="flex items-center mb2">
-        <select
-          className="flex-auto mr1"
-          value={server}
-          onChange={(e) => setServer(e.target.value)}
-          placeholder="Server"
-        >
-          {servers.map((server) => (
-            <option key={server.key}>{server.name}</option>
-          ))}
-        </select>
-
-        <input
-          className="flex-auto"
-          value={filter}
-          onChange={(e) => setFilter(e.target.value)}
-          placeholder="Filter topics"
-        />
-      </div> */}
-
         <table>
           <thead>
             <tr>
@@ -77,17 +84,44 @@ function Messages({ serverKey, topic }: IMessagesProps) {
               <th>Key</th>
               <th>Value</th>
             </tr>
+            <tr>
+              <th>
+                <input type="number" value={partition} onChange={(e) => setPartition(e.target.value)} />
+              </th>
+              <th>
+                <input value={offset} onChange={(e) => setOffset(e.target.value)} />
+              </th>
+              <th>
+                <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+              </th>
+              <th>
+                <input value={key} onChange={(e) => setKey(e.target.value)} />
+              </th>
+              <th>
+                <input value={value} onChange={(e) => setValue(e.target.value)} />
+              </th>
+            </tr>
           </thead>
           <tbody>
-            {messages.map((payload, key) => (
-              <tr key={key}>
-                <td>{payload.partition}</td>
-                <td>{payload.message.offset}</td>
-                <td>{payload.message.timestamp}</td>
-                <td>{payload.message.key?.toString()}</td>
-                <td>{payload.message.value?.toString()}</td>
+            {!messages.length ? (
+              <tr>
+                <td colSpan={5}>
+                  <Loader />
+                </td>
               </tr>
-            ))}
+            ) : (
+              messages.map((message, key) => (
+                <tr key={key}>
+                  <td>{message.partition}</td>
+                  <td>{message.offset}</td>
+                  <td>{fromUnixTime(message.timestamp / 1000).toISOString()}</td>
+                  <td>{message.key}</td>
+                  <td className="truncate" style={{ maxWidth: 500 }}>
+                    {message.value}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
         <div className="center">
