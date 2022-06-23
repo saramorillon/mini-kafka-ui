@@ -1,4 +1,5 @@
 import { app, BrowserWindow, shell } from 'electron'
+import installExtension, { REACT_DEVELOPER_TOOLS } from 'electron-devtools-installer'
 import { promises } from 'fs'
 import path from 'path'
 import { getConfig, updateConfig } from './controllers/config'
@@ -40,6 +41,7 @@ async function createWindow() {
   await win.loadURL('about:blank').catch(console.error)
 
   if (process.env.NODE_ENV === 'dev') {
+    await installExtension(REACT_DEVELOPER_TOOLS).catch(console.error)
     win.webContents.openDevTools({ mode: 'right', activate: false })
     await win.loadURL('http://localhost:4000').catch(console.error)
   } else {
