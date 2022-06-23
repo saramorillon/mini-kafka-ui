@@ -1,6 +1,8 @@
-.icon {
+svg {
   vertical-align: middle;
   margin-top: -0.25em;
+  height: 1em;
+  stroke-width: 2;
 }
 
 html,

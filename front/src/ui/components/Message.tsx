@@ -1,5 +1,5 @@
 import { useCopy, usePagination } from '@saramorillon/hooks'
-import { IconClipboard, IconEye, IconList, IconX } from '@tabler/icons'
+import { Clipboard, Eye, List, X } from '@styled-icons/feather'
 import { fromUnixTime, parseISO } from 'date-fns'
 import get from 'lodash.get'
 import React, { FormEvent, InputHTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react'
@@ -97,7 +97,7 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
     <>
       <header>
         <h1>
-          <IconList size={36} /> {topic}
+          <List /> {topic}
         </h1>
       </header>
       <main>
@@ -153,7 +153,7 @@ function DeletableColumn({ name, onClick }: IDeletableColumnProps) {
     <>
       {name}
       <button className="ml1 p0" onClick={onClick}>
-        <IconX size={16} />
+        <X />
       </button>
     </>
   )
@@ -170,10 +170,10 @@ function ActionCell({ message, onClick }: IActionCellProps) {
   return (
     <>
       <button onClick={onClick}>
-        <IconEye />
+        <Eye />
       </button>
       <button onClick={() => copy(message.value)} disabled={!authorized}>
-        <IconClipboard />
+        <Clipboard />
       </button>
     </>
   )

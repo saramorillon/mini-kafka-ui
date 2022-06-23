@@ -1,4 +1,4 @@
-import { IconX } from '@tabler/icons'
+import { X } from '@styled-icons/feather'
 import React, { PropsWithChildren } from 'react'
 
 interface ILoadContainerProps {
@@ -11,7 +11,7 @@ export function LoadContainer({ loading, error, children }: PropsWithChildren<IL
   if (error)
     return (
       <article>
-        <IconX color="red" /> An error occured
+        <X color="red" /> An error occured
       </article>
     )
   return <>{children}</>

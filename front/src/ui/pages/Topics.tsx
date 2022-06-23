@@ -1,17 +1,11 @@
 import { useFetch, usePagination } from '@saramorillon/hooks'
-import {
-  IconChevronLeft,
-  IconChevronRight,
-  IconChevronsLeft,
-  IconChevronsRight,
-  IconList,
-  IconStar,
-} from '@tabler/icons'
+import { List, Star } from '@styled-icons/feather'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ServersContext } from '../../contexts/ServersContext'
 import { getTopics, toggleTopicFavorite } from '../../services/topic'
 import { LoadContainer } from '../components/LoadContainer'
+import { Pagination } from '../components/Pagination'
 
 const limit = 10
 
@@ -19,7 +13,8 @@ export function Topics() {
   const { servers } = useContext(ServersContext)
   const [server, setServer] = useState(servers[0]?.key || '')
 
-  const { page, setMaxPage, maxPage, first, previous, next, last, canPrevious, canNext, goTo } = usePagination()
+  const pagination = usePagination()
+  const { page, setMaxPage, goTo } = pagination
 
   const [filter, setFilter] = useState('')
   const fetch = useCallback(() => getTopics(server), [server])
@@ -61,7 +56,7 @@ export function Topics() {
     <>
       <header>
         <h1>
-          <IconList size={36} /> Topics
+          <List /> Topics
         </h1>
       </header>
       <main>
@@ -106,9 +101,8 @@ export function Topics() {
                     {topic.partitions}
                   </td>
                   <td className="center" style={{ width: 1 }}>
-                    <IconStar
+                    <Star
                       fill={topic.favorite ? 'currentColor' : 'none'}
-                      size={16}
                       style={{ cursor: 'pointer' }}
                       onClick={() => toggleFavorite(topic.name)}
                     />
@@ -117,23 +111,7 @@ export function Topics() {
               ))}
             </tbody>
           </table>
-          <div className="center">
-            <button disabled={!canPrevious} onClick={first} aria-label="First">
-              <IconChevronsLeft />
-            </button>
-            <button disabled={!canPrevious} onClick={previous} aria-label="Previous">
-              <IconChevronLeft />
-            </button>
-            <span className="mx1">
-              Page {page} of {maxPage}
-            </span>
-            <button disabled={!canNext} onClick={next} aria-label="Next">
-              <IconChevronRight />
-            </button>
-            <button disabled={!canNext} onClick={last} aria-label="Last">
-              <IconChevronsRight />
-            </button>
-          </div>
+          <Pagination pagination={pagination} />
         </LoadContainer>
       </main>
     </>

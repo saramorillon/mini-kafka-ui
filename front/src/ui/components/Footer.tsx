@@ -1,5 +1,5 @@
 import { useFetch } from '@saramorillon/hooks'
-import { IconBrandGithub, IconWorld } from '@tabler/icons'
+import { GitBranch, Globe } from '@styled-icons/feather'
 import React from 'react'
 import { getApp } from '../../services/app'
 
@@ -13,11 +13,11 @@ export function Footer() {
       <b>{app.name}</b> v{app.version} &copy; {app.author.name} {new Date().getFullYear()}
       <br />
       <a href={app.repository.url} target="_blank" rel="noopener noreferrer">
-        <IconBrandGithub /> {app.repository.url}
+        <GitBranch /> {app.repository.url}
       </a>
       <br />
       <a href={app.author.url} target="_blank" rel="noopener noreferrer">
-        <IconWorld /> {app.author.url}
+        <Globe /> {app.author.url}
       </a>
       <br />
     </footer>

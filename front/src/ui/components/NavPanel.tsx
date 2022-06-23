@@ -1,4 +1,4 @@
-import { IconDatabase, IconList, IconPlus } from '@tabler/icons'
+import { Database, List, Plus } from '@styled-icons/feather'
 import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { ServersContext } from '../../contexts/ServersContext'
@@ -10,7 +10,7 @@ export function NavPanel() {
     <aside>
       <ul>
         <li>
-          <IconList /> Topics
+          <List /> Topics
         </li>
         {servers.map((server, key) => (
           <li key={key}>
@@ -20,11 +20,11 @@ export function NavPanel() {
       </ul>
       <ul>
         <li>
-          <IconDatabase /> Servers
+          <Database /> Servers
         </li>
         <li>
           <Link to="/server">
-            <IconPlus /> Create server
+            <Plus /> Create server
           </Link>
         </li>
         {servers.map((server, key) => (

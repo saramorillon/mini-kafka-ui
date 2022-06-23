@@ -1,4 +1,4 @@
-import { IconSearch } from '@tabler/icons'
+import { Search } from '@styled-icons/feather'
 import React from 'react'
 
 export function Loader() {
@@ -8,7 +8,7 @@ export function Loader() {
 export function NotFound({ message }: { message: string }) {
   return (
     <div className="center">
-      <IconSearch size={16} color="var(--palette-background-light)" /> {message}
+      <Search /> {message}
     </div>
   )
 }

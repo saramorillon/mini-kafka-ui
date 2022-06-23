@@ -1,14 +1,14 @@
 {
+  "include": ["src"],
   "compilerOptions": {
-    "target": "ES6",
-    "module": "CommonJS",
     "outDir": "dist",
-    "lib": ["ES2021.String"],
+    "target": "es6",
+    "module": "commonjs",
     "moduleResolution": "node",
-    "esModuleInterop": true,
-    "sourceMap": true,
+    "lib": ["dom"],
     "strict": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
-  },
-  "include": ["src"]
+  }
 }

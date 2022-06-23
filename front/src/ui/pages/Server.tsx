@@ -1,5 +1,5 @@
 import { useFetch, useForm } from '@saramorillon/hooks'
-import { IconDeviceFloppy, IconTrash } from '@tabler/icons'
+import { Save, Trash } from '@styled-icons/feather'
 import React, { useCallback, useContext, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { ServersContext } from '../../contexts/ServersContext'
@@ -69,11 +69,11 @@ export function Server() {
           </label>
           <div className="right">
             <button type="submit" data-variant="outlined">
-              <IconDeviceFloppy /> Save
+              <Save /> Save
             </button>
             {server && (
               <button type="button" className="ml1" onClick={() => onDelete(server)}>
-                <IconTrash /> Delete
+                <Trash /> Delete
               </button>
             )}
           </div>

@@ -1,4 +1,4 @@
-import { IconX } from '@tabler/icons'
+import { X } from '@styled-icons/feather'
 import React, { useEffect, useRef } from 'react'
 import ReactJson from 'react-json-view'
 import { IMessage } from '../../models/IMessage'
@@ -24,7 +24,7 @@ export function MessageDialog({ message, onClose }: IMessageDialogProps) {
       <header>
         <h1>Dialog header</h1>
         <button onClick={onClose}>
-          <IconX />
+          <X />
         </button>
       </header>
       <section style={{ width: '70vw', height: '70vh', overflow: 'auto' }}>

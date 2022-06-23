@@ -1,12 +1,13 @@
 {
+  "include": ["src", "vite.config.ts"],
   "compilerOptions": {
-    "target": "ES6",
-    "module": "CommonJS",
+    "outDir": "dist",
+    "target": "esnext",
+    "module": "esnext",
     "moduleResolution": "node",
-    "esModuleInterop": true,
-    "sourceMap": true,
+    "lib": ["dom"],
+    "jsx": "react",
     "strict": true,
-    "jsx": "react"
-  },
-  "include": ["src", "vite.config.ts"]
+    "allowSyntheticDefaultImports": true
+  }
 }

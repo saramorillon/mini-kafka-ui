@@ -1,5 +1,5 @@
 import { useFetch } from '@saramorillon/hooks'
-import { IconStar } from '@tabler/icons'
+import { Star } from '@styled-icons/feather'
 import React, { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 import { getFavoriteTopics, toggleTopicFavorite } from '../../services/topic'
@@ -18,7 +18,7 @@ export function Home() {
     <>
       <header>
         <h1>
-          <img src="/favicon.svg" style={{ height: '1em' }} /> Mini Kafka UI
+          <img src="/favicon.svg" /> Mini Kafka UI
         </h1>
       </header>
       <main>
@@ -26,10 +26,9 @@ export function Home() {
         <LoadContainer loading={loading} error={error}>
           {topics.map((topic, key) => (
             <article key={key}>
-              <IconStar
+              <Star
                 className="right"
                 fill="currentColor"
-                size={16}
                 style={{ cursor: 'pointer' }}
                 onClick={() => toggleFavorite(topic.server.key, topic.name)}
               />

@@ -1,4 +1,4 @@
-import { IconDatabase, IconList, IconSettings } from '@tabler/icons'
+import { Database, List, Settings } from '@styled-icons/feather'
 import { ipcRenderer } from 'electron'
 import React, { MouseEvent, useCallback } from 'react'
 import { Link, NavLink } from 'react-router-dom'
@@ -17,13 +17,13 @@ export function Navbar(): JSX.Element {
         </strong>
       </Link>
       <NavLink to="/topics">
-        <IconList /> Topics
+        <List /> Topics
       </NavLink>
       <NavLink to="/servers">
-        <IconDatabase /> Servers
+        <Database /> Servers
       </NavLink>
       <button className="ml-auto" onClick={onOpenConfig}>
-        <IconSettings /> Config
+        <Settings /> Config
       </button>
     </nav>
   )

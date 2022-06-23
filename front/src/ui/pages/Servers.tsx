@@ -1,4 +1,4 @@
-import { IconDatabase, IconPencil, IconPlus } from '@tabler/icons'
+import { Database, PenTool, Plus } from '@styled-icons/feather'
 import React, { useContext, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ServersContext } from '../../contexts/ServersContext'
@@ -16,7 +16,7 @@ export function Servers() {
     <>
       <header>
         <h1>
-          <IconDatabase size={36} /> Servers
+          <Database /> Servers
         </h1>
       </header>
       <main>
@@ -29,7 +29,7 @@ export function Servers() {
           />
 
           <Link to="/server">
-            <IconPlus /> Add server
+            <Plus /> Add server
           </Link>
         </div>
 
@@ -43,7 +43,7 @@ export function Servers() {
                 </i>
               </small>
               <Link className="right" to={`/server/${server.key}`}>
-                <IconPencil />
+                <PenTool />
               </Link>
             </article>
           ))}
