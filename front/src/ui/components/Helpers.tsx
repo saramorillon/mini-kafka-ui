@@ -5,12 +5,10 @@ export function Loader() {
   return <div aria-label="Loading..." aria-busy />
 }
 
-export function NotFound() {
+export function NotFound({ message }: { message: string }) {
   return (
     <div className="center">
-      <IconSearch size={80} color="var(--palette-background-light)" />
-      <br />
-      Not found
+      <IconSearch size={16} color="var(--palette-background-light)" /> {message}
     </div>
   )
 }
