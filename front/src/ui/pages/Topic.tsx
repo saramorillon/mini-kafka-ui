@@ -1,8 +1,17 @@
-import { usePagination } from '@saramorillon/hooks'
-import { IconChevronLeft, IconChevronRight, IconChevronsLeft, IconChevronsRight, IconList } from '@tabler/icons'
+import { useCopy, usePagination } from '@saramorillon/hooks'
+import {
+  IconChevronLeft,
+  IconChevronRight,
+  IconChevronsLeft,
+  IconChevronsRight,
+  IconClipboard,
+  IconEye,
+  IconList,
+} from '@tabler/icons'
 import { fromUnixTime, parseISO } from 'date-fns'
 import { ipcRenderer } from 'electron'
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import ReactJson from 'react-json-view'
 import { Navigate, useParams } from 'react-router-dom'
 import { IMessage } from '../../models/IMessage'
 import { Loader } from '../components/Helpers'
@@ -27,12 +36,16 @@ interface IMessagesProps {
 function Messages({ serverKey, topic }: IMessagesProps) {
   const { page, setMaxPage, maxPage, first, previous, next, last, canPrevious, canNext, goTo } = usePagination()
   const [allMessages, setMessages] = useState<IMessage[]>([])
+  const [authorized, , copy] = useCopy()
 
   const [partition, setPartition] = useState('')
   const [offset, setOffset] = useState('')
   const [date, setDate] = useState('')
   const [key, setKey] = useState('')
   const [value, setValue] = useState('')
+
+  const ref = useRef<HTMLDialogElement>(null)
+  const [message, setMessage] = useState<IMessage>()
 
   useEffect(() => {
     void ipcRenderer.invoke('start-consumer', serverKey, topic)
@@ -43,6 +56,14 @@ function Messages({ serverKey, topic }: IMessagesProps) {
       void ipcRenderer.invoke('stop-consumer', serverKey, topic)
     }
   }, [serverKey, topic])
+
+  useEffect(() => {
+    const shouldOpen = Boolean(message)
+    if (shouldOpen !== ref.current?.open) {
+      if (shouldOpen) ref.current?.showModal()
+      else ref.current?.close()
+    }
+  }, [message])
 
   const filteredMessages = useMemo(
     () =>
@@ -83,6 +104,7 @@ function Messages({ serverKey, topic }: IMessagesProps) {
               <th>Timestamp</th>
               <th>Key</th>
               <th>Value</th>
+              <th></th>
             </tr>
             <tr>
               <th>
@@ -100,12 +122,13 @@ function Messages({ serverKey, topic }: IMessagesProps) {
               <th>
                 <input value={value} onChange={(e) => setValue(e.target.value)} />
               </th>
+              <th></th>
             </tr>
           </thead>
           <tbody>
             {!messages.length ? (
               <tr>
-                <td colSpan={5}>
+                <td colSpan={6}>
                   <Loader />
                 </td>
               </tr>
@@ -118,6 +141,14 @@ function Messages({ serverKey, topic }: IMessagesProps) {
                   <td>{message.key}</td>
                   <td className="truncate" style={{ maxWidth: 500 }}>
                     {message.value}
+                  </td>
+                  <td className="nowrap">
+                    <button onClick={() => setMessage(message)}>
+                      <IconEye />
+                    </button>
+                    <button onClick={() => copy(message.value)} disabled={!authorized}>
+                      <IconClipboard />
+                    </button>
                   </td>
                 </tr>
               ))
@@ -141,6 +172,28 @@ function Messages({ serverKey, topic }: IMessagesProps) {
             <IconChevronsRight />
           </button>
         </div>
+        <dialog ref={ref}>
+          <header>
+            <h1>Dialog header</h1>
+            <button onClick={() => setMessage(undefined)}>✖</button>
+          </header>
+          <section style={{ width: '70vw', height: '70vh', overflow: 'auto' }}>
+            {message && (
+              <ReactJson
+                style={{ padding: '1rem 2rem' }}
+                src={JSON.parse(message.value)}
+                theme="ashes"
+                enableClipboard={false}
+                displayDataTypes={false}
+                displayObjectSize={false}
+                name={null}
+              />
+            )}
+          </section>
+          <footer>
+            <button onClick={() => setMessage(undefined)}>Close</button>
+          </footer>
+        </dialog>
       </main>
     </>
   )
