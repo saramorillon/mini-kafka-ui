@@ -1,7 +1,7 @@
 export interface IMessage {
   partition: number
   offset: string
-  timestamp: number
+  timestamp: string
   key?: string
   value: string
 }

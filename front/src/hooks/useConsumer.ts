@@ -1,19 +1,16 @@
 import { ipcRenderer } from 'electron'
 import { useEffect, useState } from 'react'
-import { IMessage } from '../models/IMessage'
 
-export function useConsumer(key: string, topic: string) {
-  const [allMessages, setMessages] = useState<IMessage[]>([])
+export function useConsumer(key: string, topic: string): boolean {
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    void ipcRenderer.invoke('start-consumer', key, topic)
-    ipcRenderer.on('message', (event, message) => {
-      setMessages((messages) => [...messages, message])
-    })
+    setLoading(true)
+    void ipcRenderer.invoke('start-consumer', key, topic).finally(() => setLoading(false))
     return () => {
       void ipcRenderer.invoke('stop-consumer', key, topic)
     }
   }, [key, topic])
 
-  return allMessages
+  return loading
 }

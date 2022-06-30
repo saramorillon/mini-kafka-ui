@@ -1,8 +1,8 @@
 import { ipcRenderer } from 'electron'
-import type { EachMessagePayload } from 'kafkajs'
+import { IMessage } from '../models/IMessage'
 
-export function getMessages(key: string, topic: string): Promise<EachMessagePayload[]> {
-  return ipcRenderer.invoke('get-messages', key, topic)
+export function getMessages(filters: Record<string, string>, page: number, limit: number): Promise<IMessage[]> {
+  return ipcRenderer.invoke('get-messages', filters, page, limit)
 }
 
 export async function sendMessage(key: string, topic: string, value: string): Promise<void> {

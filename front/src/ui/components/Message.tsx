@@ -1,12 +1,14 @@
 import { useCopy, usePagination } from '@saramorillon/hooks'
 import { Clipboard, Eye, X } from '@styled-icons/feather'
-import { fromUnixTime, parseISO } from 'date-fns'
+import { fromUnixTime } from 'date-fns'
+import { ipcRenderer } from 'electron'
 import get from 'lodash.get'
 import React, { FormEvent, InputHTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react'
 import { useConsumer } from '../../hooks/useConsumer'
 import { useCustomColumns } from '../../hooks/useCustomColumns'
 import { useFilters } from '../../hooks/useFilters'
 import { IMessage } from '../../models/IMessage'
+import { getMessages } from '../../services/message'
 import { MessageDialog } from './MessageDialog'
 import { Pagination } from './Pagination'
 import { IColumn, Table } from './Table'
@@ -19,35 +21,32 @@ interface IMessagesProps {
 }
 
 export function Messages({ serverKey, topic }: IMessagesProps) {
+  const loading = useConsumer(serverKey, topic)
+
   const pagination = usePagination()
   const { page, setMaxPage, goTo } = pagination
 
   const [customColumns, onColumnAdd, onColumnDelete] = useCustomColumns()
   const [filters, onFilter] = useFilters()
+
+  const [messages, setMessages] = useState<IMessage[]>([])
   const [message, setMessage] = useState<IMessage>()
-
-  const allMessages = useConsumer(serverKey, topic)
-
-  const filteredMessages = useMemo(
-    () =>
-      allMessages.filter(
-        (message) =>
-          (!filters.partition || message.partition.toString() === filters.partition) &&
-          (!filters.offset || message.offset === filters.offset) &&
-          (!filters.date || message.timestamp > parseISO(filters.date).getTime()) &&
-          (!filters.key || message.key?.toLowerCase().includes(filters.key.toLowerCase())) &&
-          (!filters.value || message.value.toLowerCase().includes(filters.value?.toLowerCase()))
-      ),
-    [allMessages, filters]
-  )
 
   useEffect(() => {
     goTo(1)
   }, [goTo, filters])
 
   useEffect(() => {
-    setMaxPage(Math.ceil(filteredMessages.length / limit))
-  }, [filteredMessages, setMaxPage])
+    void getMessages(filters, page, limit)
+  }, [filters, page])
+
+  useEffect(() => {
+    ipcRenderer.on('total', (event, total) => setMaxPage(Math.ceil(total / limit)))
+  }, [setMaxPage])
+
+  useEffect(() => {
+    ipcRenderer.on('messages', (event, messages) => setMessages(messages))
+  }, [])
 
   const columns: IColumn<IMessage>[] = useMemo(
     () => [
@@ -64,7 +63,7 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
       {
         header: 'Timestamp',
         filter: <Filter type="date" name="timestamp" filters={filters} onFilter={onFilter} />,
-        cell: ({ timestamp }) => fromUnixTime(timestamp / 1000).toISOString(),
+        cell: ({ timestamp }) => fromUnixTime(Number(timestamp) / 1000).toISOString(),
         props: { className: 'nowrap' },
       },
       {
@@ -76,12 +75,12 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
         header: 'Value',
         filter: <Filter name="value" filters={filters} onFilter={onFilter} />,
         cell: ({ value }) => value,
-        props: { className: 'truncate', style: { maxWidth: 500 } },
+        props: { className: 'truncate', style: { width: 500, maxWidth: 500 } },
       },
       ...customColumns.map((column) => ({
         header: <DeletableColumn name={column} onClick={() => onColumnDelete(column)} />,
         cell: (message: IMessage) => JSON.stringify(get(JSON.parse(message.value), column)),
-        props: { className: 'truncate', style: { maxWidth: 500 } },
+        props: { className: 'truncate', style: { maxWidth: 200 } },
       })),
       {
         header: '',
@@ -91,12 +90,11 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
     ],
     [customColumns, onColumnDelete, filters, onFilter]
   )
-  const rows = useMemo(() => filteredMessages.slice((page - 1) * limit, page * limit), [filteredMessages, page])
 
   return (
     <>
       <AddColumnForm onColumnAdd={onColumnAdd} />
-      <Table columns={columns} rows={rows} loading={!allMessages.length} />
+      <Table columns={columns} rows={messages} loading={loading} />
       <Pagination pagination={pagination} />
       <MessageDialog message={message} onClose={() => setMessage(undefined)} />
     </>
