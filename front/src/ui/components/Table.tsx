@@ -24,29 +24,31 @@ export function Table<T>({ columns, rows, loading, error }: ITableProps<T>) {
             <th key={key}>{column.header}</th>
           ))}
         </tr>
-        <tr>
-          {columns.map((column, key) => (
-            <th key={key}>{column.filter}</th>
-          ))}
-        </tr>
+        {columns.some((column) => column.filter) && (
+          <tr>
+            {columns.map((column, key) => (
+              <th key={key}>{column.filter}</th>
+            ))}
+          </tr>
+        )}
       </thead>
       <tbody>
         {loading ? (
           <tr>
             <td colSpan={columns.length}>
-              <Loading message="Loading messages" />
+              <Loading message="Loading data" />
             </td>
           </tr>
         ) : error ? (
           <tr>
             <td colSpan={columns.length}>
-              <Error message="Error starting consumer" />
+              <Error message="Error while loading data" />
             </td>
           </tr>
         ) : !rows.length ? (
           <tr>
             <td colSpan={columns.length}>
-              <NotFound message="No message for now" />
+              <NotFound message="No data for now" />
             </td>
           </tr>
         ) : (

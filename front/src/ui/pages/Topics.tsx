@@ -3,15 +3,16 @@ import { List, Star } from '@styled-icons/feather'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ServersContext } from '../../contexts/ServersContext'
+import { ITopic } from '../../models/ITopic'
 import { getTopics, toggleTopicFavorite } from '../../services/topic'
-import { LoadContainer } from '../components/LoadContainer'
 import { Pagination } from '../components/Pagination'
+import { IColumn, Table } from '../components/Table'
 
 const limit = 10
 
 export function Topics() {
   const { servers } = useContext(ServersContext)
-  const [server, setServer] = useState(servers[0]?.key || '')
+  const [server, setServer] = useState('')
 
   const pagination = usePagination()
   const { page, setMaxPage, goTo } = pagination
@@ -52,6 +53,33 @@ export function Topics() {
     [server, replace]
   )
 
+  const columns: IColumn<ITopic>[] = useMemo(
+    () => [
+      {
+        header: 'Topic',
+        cell: ({ name }) => <Link to={`/topic/${server}/${name}`}>{name}</Link>,
+        style: { width: 1 },
+      },
+      {
+        header: 'Topic',
+        cell: ({ partitions }) => partitions,
+        style: { width: 1 },
+      },
+      {
+        header: 'Topic',
+        cell: ({ name, favorite }) => (
+          <Star
+            fill={favorite ? 'currentColor' : 'none'}
+            style={{ cursor: 'pointer' }}
+            onClick={() => toggleFavorite(name)}
+          />
+        ),
+        style: { width: 1 },
+      },
+    ],
+    [server, toggleFavorite]
+  )
+
   return (
     <>
       <header>
@@ -67,6 +95,7 @@ export function Topics() {
             onChange={(e) => setServer(e.target.value)}
             placeholder="Server"
           >
+            {!server && <option value="">Select a server</option>}
             {servers.map((server) => (
               <option key={server.key} value={server.key}>
                 {server.name}
@@ -82,37 +111,8 @@ export function Topics() {
           />
         </div>
 
-        <LoadContainer loading={loading} error={error}>
-          <table>
-            <thead>
-              <tr>
-                <th>Topic</th>
-                <th>Partitions</th>
-                <th>Favorite</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topics.map((topic) => (
-                <tr key={topic.name}>
-                  <td className="truncate" style={{ maxWidth: 1 }}>
-                    <Link to={`/topic/${server}/${topic.name}`}>{topic.name}</Link>
-                  </td>
-                  <td className="center" style={{ width: 1 }}>
-                    {topic.partitions}
-                  </td>
-                  <td className="center" style={{ width: 1 }}>
-                    <Star
-                      fill={topic.favorite ? 'currentColor' : 'none'}
-                      style={{ cursor: 'pointer' }}
-                      onClick={() => toggleFavorite(topic.name)}
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <Pagination pagination={pagination} />
-        </LoadContainer>
+        <Table columns={columns} rows={topics} loading={loading} error={error} />
+        <Pagination pagination={pagination} />
       </main>
     </>
   )
