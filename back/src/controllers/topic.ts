@@ -1,12 +1,12 @@
 import { IpcMainInvokeEvent } from 'electron'
-import { getClient } from '../services/kafka'
+import { KafkaService } from '../services/kafka'
 import { getConfig, updateConfig } from './config'
 
 export async function getTopics(event: IpcMainInvokeEvent, server: string) {
-  const { favorites } = await getConfig()
-  const client = await getClient(server)
+  const client = await KafkaService.getClient(server)
   const admin = client.admin()
   await admin.connect()
+  const { favorites } = await getConfig()
   const { topics } = await admin.fetchTopicMetadata()
   return topics.map((topic) => ({
     name: topic.name,
