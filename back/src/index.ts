@@ -3,6 +3,7 @@ import { promises } from 'fs'
 import path from 'path'
 import { getConfig, updateConfig } from './controllers/config'
 import './routes'
+import { Database } from './services/db'
 import { settings } from './settings'
 
 let timeout: NodeJS.Timeout
@@ -25,8 +26,10 @@ function updateWindow(win: BrowserWindow) {
   }, 250)
 }
 
-async function createWindow() {
+async function init() {
   await promises.mkdir(settings.configDir, { recursive: true }).catch(() => false)
+
+  await Database.init()
 
   const config = await getConfig()
 
@@ -62,5 +65,5 @@ async function createWindow() {
   })
 }
 
-app.on('ready', () => createWindow())
+app.on('ready', () => init())
 app.on('window-all-closed', () => app.quit())

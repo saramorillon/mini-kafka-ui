@@ -21,6 +21,7 @@
   "devDependencies": {
     "@saramorillon/eslint-config-typescript": "^1.1.0",
     "@types/node": "^17.0.31",
+    "@types/sqlite3": "^3.1.8",
     "@typescript-eslint/eslint-plugin": "^5.23.0",
     "@typescript-eslint/parser": "^5.23.0",
     "electron": "^19.0.4",
@@ -34,6 +35,7 @@
     "typescript": "^4.6.4"
   },
   "dependencies": {
-    "kafkajs": "^2.0.0"
+    "kafkajs": "^2.0.0",
+    "sqlite3": "^5.0.8"
   }
 }

@@ -27,7 +27,7 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
   const { page, setMaxPage, goTo } = pagination
 
   const [customColumns, onColumnAdd, onColumnDelete] = useCustomColumns()
-  const [filters, onFilter] = useFilters()
+  const [filters, onFilter] = useFilters(serverKey, topic)
 
   const [messages, setMessages] = useState<IMessage[]>([])
   const [message, setMessage] = useState<IMessage>()
