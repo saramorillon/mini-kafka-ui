@@ -7,9 +7,6 @@ import { settings } from '../settings'
 const { clientId, groupId } = settings
 
 export class KafkaService extends EventEmitter {
-  private static _emitter?: EventEmitter
-
-  private static _client?: Kafka
   private static _consumer?: Consumer
 
   private static _filters: Record<string, string>
@@ -18,13 +15,6 @@ export class KafkaService extends EventEmitter {
 
   private static _messages: { partition: number; offset: string; timestamp: string; key?: string; value?: string }[] =
     []
-
-  static get emitter() {
-    if (!this._emitter) {
-      this._emitter = new EventEmitter()
-    }
-    return this._emitter
-  }
 
   static get filteredMessages() {
     return this._messages.filter(
@@ -41,25 +31,32 @@ export class KafkaService extends EventEmitter {
     return this.filteredMessages.slice((this._page - 1) * this._limit, this._page * this._limit)
   }
 
-  static async create(key: string, topic: string) {
-    if (!this._consumer) {
-      const client = await this.getClient(key)
-      this._consumer = client.consumer({ groupId })
-      await this._consumer.connect()
-      await this._consumer.subscribe({ topic, fromBeginning: true })
-      await this._consumer.run({
-        autoCommit: false,
-        eachMessage: this.eachMessage.bind(this),
-      })
+  static async getClient(key: string) {
+    const config = await getConfig()
+    const { brokers } = config.servers[key] || { brokers: [] }
+    if (!brokers.length) {
+      throw new Error(`Missing brokers in config for server ${key}`)
     }
+    return new Kafka({ brokers, clientId })
+  }
+
+  static async create(key: string, topic: string) {
+    await this.destroy()
+    const client = await this.getClient(key)
+    this._consumer = client.consumer({ groupId })
+    await this._consumer.connect()
+    await this._consumer.subscribe({ topic, fromBeginning: true })
+    await this._consumer.run({
+      autoCommit: false,
+      eachMessage: this.eachMessage.bind(this),
+    })
   }
 
   static async destroy() {
+    this._messages = []
     if (this._consumer) {
       await this._consumer.stop()
       await this._consumer.disconnect()
-      this._messages = []
-      delete this._client
       delete this._consumer
     }
   }
@@ -77,18 +74,6 @@ export class KafkaService extends EventEmitter {
     if (this._messages.length < this._page * this._limit) {
       BrowserWindow.getAllWindows()[0].webContents.send('messages', this.messages)
     }
-  }
-
-  static async getClient(key: string) {
-    if (!this._client) {
-      const config = await getConfig()
-      const { brokers } = config.servers[key] || { brokers: [] }
-      if (!brokers.length) {
-        throw new Error(`Missing brokers in config for server ${key}`)
-      }
-      this._client = new Kafka({ brokers, clientId })
-    }
-    return this._client
   }
 
   static getMessages(filters: Record<string, string>, page: number, limit: number) {
