@@ -1,4 +1,5 @@
-import { X } from '@styled-icons/feather'
+import { useCopy } from '@saramorillon/hooks'
+import { Clipboard, X } from '@styled-icons/feather'
 import React, { useEffect, useRef } from 'react'
 import ReactJson from 'react-json-view'
 import { IMessage } from '../../models/IMessage'
@@ -9,6 +10,7 @@ interface IMessageDialogProps {
 }
 
 export function MessageDialog({ message, onClose }: IMessageDialogProps) {
+  const [authorized, , copy] = useCopy()
   const ref = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
@@ -21,28 +23,37 @@ export function MessageDialog({ message, onClose }: IMessageDialogProps) {
 
   return (
     <dialog ref={ref}>
-      <header>
-        <h1>Dialog header</h1>
-        <button onClick={onClose}>
-          <X />
-        </button>
-      </header>
-      <section style={{ width: '70vw', height: '70vh', overflow: 'auto' }}>
-        {message && (
-          <ReactJson
-            style={{ padding: '1rem 2rem' }}
-            src={JSON.parse(message.value)}
-            theme="ashes"
-            enableClipboard={false}
-            displayDataTypes={false}
-            displayObjectSize={false}
-            name={null}
-          />
-        )}
-      </section>
-      <footer>
-        <button onClick={onClose}>Close</button>
-      </footer>
+      {message && (
+        <>
+          <header>
+            <h1>
+              Partition {message.partition} - Offset {message.offset}
+            </h1>
+            <button onClick={onClose}>
+              <X />
+            </button>
+          </header>
+          <section style={{ width: '70vw', maxHeight: '70vh', overflow: 'auto' }}>
+            <ReactJson
+              style={{ padding: '1rem 2rem' }}
+              src={JSON.parse(message.value)}
+              theme="ashes"
+              enableClipboard={false}
+              displayDataTypes={false}
+              displayObjectSize={false}
+              name={null}
+            />
+          </section>
+          <footer>
+            <button onClick={onClose}>Close</button>
+            {authorized && (
+              <button onClick={() => copy(message.value)}>
+                <Clipboard /> Copy
+              </button>
+            )}
+          </footer>
+        </>
+      )}
     </dialog>
   )
 }
