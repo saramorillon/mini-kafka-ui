@@ -21,7 +21,7 @@ interface IMessagesProps {
 }
 
 export function Messages({ serverKey, topic }: IMessagesProps) {
-  const loading = useConsumer(serverKey, topic)
+  const { loading, error } = useConsumer(serverKey, topic)
 
   const pagination = usePagination()
   const { page, setMaxPage, goTo } = pagination
@@ -94,7 +94,7 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
   return (
     <>
       <AddColumnForm onColumnAdd={onColumnAdd} />
-      <Table columns={columns} rows={messages} loading={loading} />
+      <Table columns={columns} rows={messages} loading={loading} error={error} />
       <Pagination pagination={pagination} />
       <MessageDialog message={message} onClose={() => setMessage(undefined)} />
     </>

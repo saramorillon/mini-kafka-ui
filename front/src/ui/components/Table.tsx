@@ -1,5 +1,5 @@
 import React, { ReactNode, TdHTMLAttributes } from 'react'
-import { Loader, NotFound } from './Helpers'
+import { Error, Loading, NotFound } from './Helpers'
 
 export interface IColumn<T> {
   header: ReactNode
@@ -12,9 +12,10 @@ interface ITableProps<T> {
   columns: IColumn<T>[]
   rows: T[]
   loading: boolean
+  error?: unknown
 }
 
-export function Table<T>({ columns, rows, loading }: ITableProps<T>) {
+export function Table<T>({ columns, rows, loading, error }: ITableProps<T>) {
   return (
     <table>
       <thead>
@@ -33,7 +34,13 @@ export function Table<T>({ columns, rows, loading }: ITableProps<T>) {
         {loading ? (
           <tr>
             <td colSpan={columns.length}>
-              <Loader />
+              <Loading message="Loading messages" />
+            </td>
+          </tr>
+        ) : error ? (
+          <tr>
+            <td colSpan={columns.length}>
+              <Error message="Error starting consumer" />
             </td>
           </tr>
         ) : !rows.length ? (
