@@ -1,5 +1,5 @@
 import { useCopy, usePagination } from '@saramorillon/hooks'
-import { Clipboard, Eye, List, X } from '@styled-icons/feather'
+import { Clipboard, Eye, X } from '@styled-icons/feather'
 import { fromUnixTime, parseISO } from 'date-fns'
 import get from 'lodash.get'
 import React, { FormEvent, InputHTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react'
@@ -95,17 +95,10 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
 
   return (
     <>
-      <header>
-        <h1>
-          <List /> {topic}
-        </h1>
-      </header>
-      <main>
-        <AddColumnForm onColumnAdd={onColumnAdd} />
-        <Table columns={columns} rows={rows} loading={!allMessages.length} />
-        <Pagination pagination={pagination} />
-        <MessageDialog message={message} onClose={() => setMessage(undefined)} />
-      </main>
+      <AddColumnForm onColumnAdd={onColumnAdd} />
+      <Table columns={columns} rows={rows} loading={!allMessages.length} />
+      <Pagination pagination={pagination} />
+      <MessageDialog message={message} onClose={() => setMessage(undefined)} />
     </>
   )
 }
