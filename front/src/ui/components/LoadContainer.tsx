@@ -1,5 +1,5 @@
-import { X } from '@styled-icons/feather'
 import React, { PropsWithChildren } from 'react'
+import { Error } from './Helpers'
 
 interface ILoadContainerProps {
   loading: boolean
@@ -11,7 +11,7 @@ export function LoadContainer({ loading, error, children }: PropsWithChildren<IL
   if (error)
     return (
       <article>
-        <X color="red" /> An error occured
+        <Error message="An error occured" />
       </article>
     )
   return <>{children}</>

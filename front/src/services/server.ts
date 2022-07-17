@@ -1,19 +1,17 @@
-import { ipcRenderer } from 'electron'
 import { IServer } from '../models/IServer'
 
 export function getServers(): Promise<IServer[]> {
-  return ipcRenderer.invoke('get-servers')
+  return pywebview.api.getServers()
 }
 
 export function getServer(key?: string): Promise<IServer | undefined> {
-  if (key) return ipcRenderer.invoke('get-server', key)
-  return Promise.resolve(undefined)
+  return pywebview.api.getServer(key)
 }
 
-export function saveServer(data: Partial<IServer>): Promise<void> {
-  return ipcRenderer.invoke('save-server', data)
+export function saveServer(server: IServer): Promise<void> {
+  return pywebview.api.saveServer(server)
 }
 
-export function deleteServer(data: Partial<IServer>): Promise<void> {
-  return ipcRenderer.invoke('delete-server', data)
+export function deleteServer(server: IServer): Promise<void> {
+  return pywebview.api.deleteServer(server)
 }

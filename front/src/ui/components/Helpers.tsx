@@ -24,7 +24,7 @@ export function NotFound({ message }: { message: string }) {
 export function Error({ message }: { message: string }) {
   return (
     <div className="center">
-      <X /> {message}
+      <X color="red" /> {message}
     </div>
   )
 }

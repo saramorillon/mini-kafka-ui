@@ -1,7 +1,6 @@
 import { useCopy, usePagination } from '@saramorillon/hooks'
 import { Clipboard, Eye, X } from '@styled-icons/feather'
 import { fromUnixTime } from 'date-fns'
-import { ipcRenderer } from 'electron'
 import get from 'lodash.get'
 import React, { FormEvent, InputHTMLAttributes, useCallback, useEffect, useMemo, useState } from 'react'
 import { useConsumer } from '../../hooks/useConsumer'
@@ -41,11 +40,11 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
   }, [filters, page])
 
   useEffect(() => {
-    ipcRenderer.on('total', (event, total) => setMaxPage(Math.ceil(total / limit)))
+    // ipcRenderer.on('total', (event, total) => setMaxPage(Math.ceil(total / limit)))
   }, [setMaxPage])
 
   useEffect(() => {
-    ipcRenderer.on('messages', (event, messages) => setMessages(messages))
+    // ipcRenderer.on('messages', (event, messages) => setMessages(messages))
   }, [])
 
   const columns: IColumn<IMessage>[] = useMemo(

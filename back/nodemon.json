@@ -1,8 +1,0 @@
-{
-  "restartable": "rs",
-  "ignore": [".git", "node_modules/**/node_modules"],
-  "execMap": { "js": "electron --inspect=9999" },
-  "watch": ["src/**/*"],
-  "ext": "js,ts",
-  "env": { "NODE_ENV": "dev" }
-}

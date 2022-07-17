@@ -1,5 +1,5 @@
-import { ipcRenderer } from 'electron'
 import { useEffect, useState } from 'react'
+import { startConsumer, stopConsumer } from '../services/consumer'
 
 export function useConsumer(key: string, topic: string) {
   const [error, setError] = useState<unknown>()
@@ -7,12 +7,11 @@ export function useConsumer(key: string, topic: string) {
 
   useEffect(() => {
     setLoading(true)
-    void ipcRenderer
-      .invoke('start-consumer', key, topic)
+    void startConsumer(key, topic)
       .catch(setError)
       .finally(() => setLoading(false))
     return () => {
-      void ipcRenderer.invoke('stop-consumer', key, topic)
+      void stopConsumer(key, topic)
     }
   }, [key, topic])
 
