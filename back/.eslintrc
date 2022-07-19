@@ -1,6 +1,0 @@
-{
-  "extends": ["@saramorillon/eslint-config-typescript", "@saramorillon/eslint-config-typescript/jest"],
-  "parserOptions": {
-    "project": "./tsconfig.json"
-  }
-}

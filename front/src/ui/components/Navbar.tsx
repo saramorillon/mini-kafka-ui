@@ -1,12 +1,12 @@
 import { Database, List, Settings } from '@styled-icons/feather'
-import { ipcRenderer } from 'electron'
 import React, { MouseEvent, useCallback } from 'react'
 import { Link, NavLink } from 'react-router-dom'
+import { openConfigDir } from '../../services/config'
 
 export function Navbar(): JSX.Element {
   const onOpenConfig = useCallback((e: MouseEvent) => {
     e.preventDefault()
-    void ipcRenderer.invoke('open-config-dir')
+    void openConfigDir()
   }, [])
 
   return (
