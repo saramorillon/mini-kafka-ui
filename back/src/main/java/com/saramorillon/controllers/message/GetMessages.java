@@ -5,20 +5,20 @@ import org.cef.callback.CefQueryCallback;
 import com.saramorillon.Router;
 import com.saramorillon.models.Response;
 
-class Params {
+class GetMessagesParams {
     public Map<String, String> filters;
     public int page;
     public int limit;
 }
 
 
-public class GetMessages extends Router<Params, Void> {
+public class GetMessages extends Router<SendMessageParams, Void> {
     public GetMessages() {
-        super(Params.class);
+        super(SendMessageParams.class);
     }
 
     @Override
-    public Response<Void> onQuery(Params params, CefQueryCallback callback) {
+    public Response<Void> onQuery(SendMessageParams params, CefQueryCallback callback) {
         return new Response<Void>(500, "Not implemented");
     }
 }
