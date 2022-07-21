@@ -15,8 +15,6 @@ import org.cef.CefApp;
 import org.cef.CefApp.CefAppState;
 import org.cef.CefClient;
 import org.cef.browser.CefBrowser;
-import org.cef.browser.CefMessageRouter;
-import org.cef.browser.CefMessageRouter.CefMessageRouterConfig;
 import com.saramorillon.controllers.config.OpenConfigDir;
 import com.saramorillon.controllers.consumer.StartConsumer;
 import com.saramorillon.controllers.consumer.StopConsumer;
@@ -94,36 +92,18 @@ public class App {
 
         CefClient client = builder.build().createClient();
 
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("OpenConfigDir", "OpenConfigDirAbort"),
-                new OpenConfigDir()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("GetTopics", "GetTopicsAbort"), new GetTopics()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("GetFavoriteTopics", "GetFavoriteTopicsAbort"),
-                new GetFavoriteTopics()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("ToggleFavoriteTopic", "ToggleFavoriteTopicAbort"),
-                new ToggleFavoriteTopic()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("GetServers", "GetServersAbort"), new GetServers()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("GetServer", "GetServerAbort"), new GetServer()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("SaveServer", "SaveServerAbort"), new SaveServer()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("DeleteServer", "DeleteServerAbort"),
-                new DeleteServer()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("GetMessages", "GetMessagesAbort"), new GetMessages()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("SendMessage", "SendMessageAbort"), new SendMessage()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("StartConsumer", "StartConsumerAbort"),
-                new StartConsumer()));
-        client.addMessageRouter(CefMessageRouter.create(
-                new CefMessageRouterConfig("StopConsumer", "StopConsumerAbort"),
-                new StopConsumer()));
+        client.addMessageRouter(Router.route(new OpenConfigDir()));
+        client.addMessageRouter(Router.route(new GetTopics()));
+        client.addMessageRouter(Router.route(new GetFavoriteTopics()));
+        client.addMessageRouter(Router.route(new ToggleFavoriteTopic()));
+        client.addMessageRouter(Router.route(new GetServers()));
+        client.addMessageRouter(Router.route(new GetServer()));
+        client.addMessageRouter(Router.route(new SaveServer()));
+        client.addMessageRouter(Router.route(new DeleteServer()));
+        client.addMessageRouter(Router.route(new GetMessages()));
+        client.addMessageRouter(Router.route(new SendMessage()));
+        client.addMessageRouter(Router.route(new StartConsumer()));
+        client.addMessageRouter(Router.route(new StopConsumer()));
 
         CefBrowser browser = client.createBrowser(App.getUrl(), false, false);
         Component browserUI = browser.getUIComponent();

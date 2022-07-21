@@ -2,6 +2,8 @@ package com.saramorillon;
 
 import org.cef.browser.CefBrowser;
 import org.cef.browser.CefFrame;
+import org.cef.browser.CefMessageRouter;
+import org.cef.browser.CefMessageRouter.CefMessageRouterConfig;
 import org.cef.callback.CefQueryCallback;
 import org.cef.handler.CefMessageRouterHandlerAdapter;
 import com.google.gson.Gson;
@@ -41,6 +43,11 @@ public abstract class Router<P, R> extends CefMessageRouterHandlerAdapter {
         }
 
         return true;
+    }
+
+    public static CefMessageRouter route(CefMessageRouterHandlerAdapter adapter) {
+        String name = adapter.getClass().getSimpleName();
+        return CefMessageRouter.create(new CefMessageRouterConfig(name, name + "Abort"), adapter);
     }
 }
 
