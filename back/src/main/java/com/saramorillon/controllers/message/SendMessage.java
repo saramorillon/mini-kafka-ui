@@ -13,20 +13,20 @@ import com.saramorillon.Router;
 import com.saramorillon.models.Response;
 import com.saramorillon.models.Server;
 
-class Params {
+class SendMessageParams {
     public String key;
     public String topic;
     public String value;
 }
 
 
-public class SendMessage extends Router<Params, Void> {
+public class SendMessage extends Router<SendMessageParams, Void> {
     public SendMessage() {
-        super(Params.class);
+        super(SendMessageParams.class);
     }
 
     @Override
-    public Response<Void> onQuery(Params params, CefQueryCallback callback) {
+    public Response<Void> onQuery(SendMessageParams params, CefQueryCallback callback) {
         try {
             Server server = Config.get().servers.get(params.key);
             Properties props = new Properties();
