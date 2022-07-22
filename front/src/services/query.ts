@@ -1,4 +1,4 @@
-export function query<T>(name: keyof WindowBinding, args?: Record<string, unknown>) {
+export function query<T>(name: keyof WindowBinding, args?: unknown) {
   return new Promise<T>((resolve, reject) => {
     window[name]({
       request: args ? JSON.stringify(args) : '',

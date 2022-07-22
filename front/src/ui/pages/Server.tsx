@@ -11,7 +11,7 @@ import { Loader } from '../components/Helpers'
 const empty: IServer = {
   key: '',
   name: '',
-  brokers: [],
+  brokers: '',
 }
 
 export function Server() {
@@ -60,8 +60,8 @@ export function Server() {
           <label>
             Brokers
             <textarea
-              value={values.brokers.join('\n')}
-              onChange={(e) => onChange('brokers', e.target.value.split(/\s|\n|,|;/))}
+              value={values.brokers}
+              onChange={(e) => onChange('brokers', e.target.value.split(/\s|\n|,|;/).join(','))}
               rows={6}
               required
             />

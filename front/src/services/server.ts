@@ -6,14 +6,14 @@ export function getServers(): Promise<Record<string, IServer>> {
 }
 
 export function getServer(key?: string): Promise<IServer | undefined> {
-  if (key) return query('GetServer', { key })
+  if (key) return query('GetServer', key)
   return Promise.resolve(undefined)
 }
 
-export function saveServer(data: Partial<IServer>): Promise<void> {
-  return query('SaveServer', { data })
+export function saveServer(server: Partial<IServer>): Promise<void> {
+  return query('SaveServer', server)
 }
 
-export function deleteServer(data: Partial<IServer>): Promise<void> {
-  return query('DeleteServer', { data })
+export function deleteServer(server: Partial<IServer>): Promise<void> {
+  return query('DeleteServer', server)
 }

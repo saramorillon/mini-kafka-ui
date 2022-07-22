@@ -39,7 +39,7 @@ export function Servers() {
               <h3>{server.name}</h3>
               <small>
                 <i>
-                  {server.brokers.length} broker{server.brokers.length > 1 && 's'}
+                  {server.brokers.split(',').length} broker{server.brokers.length > 1 && 's'}
                 </i>
               </small>
               <Link className="right" to={`/server/${server.key}`}>
