@@ -14,7 +14,9 @@ import javax.swing.JFrame;
 import org.cef.CefApp;
 import org.cef.CefApp.CefAppState;
 import org.cef.CefClient;
+import org.cef.CefSettings.LogSeverity;
 import org.cef.browser.CefBrowser;
+import org.cef.handler.CefDisplayHandlerAdapter;
 import com.saramorillon.controllers.config.OpenConfigDir;
 import com.saramorillon.controllers.consumer.StartConsumer;
 import com.saramorillon.controllers.consumer.StopConsumer;
@@ -83,6 +85,7 @@ class ComponentListener extends ComponentAdapter {
 
 
 public class App {
+    public static CefBrowser browser;
 
     public static void main(String[] args) throws UnsupportedPlatformException,
             CefInitializationException, IOException, InterruptedException {
@@ -104,8 +107,15 @@ public class App {
         client.addMessageRouter(Router.route(new SendMessage()));
         client.addMessageRouter(Router.route(new StartConsumer()));
         client.addMessageRouter(Router.route(new StopConsumer()));
+        client.addDisplayHandler(new CefDisplayHandlerAdapter() {
+            @Override
+            public boolean onConsoleMessage(CefBrowser browser, LogSeverity level, String message,
+                    String source, int line) {
+                return true;
+            }
+        });
 
-        CefBrowser browser = client.createBrowser(App.getUrl(), false, false);
+        browser = client.createBrowser(App.getUrl(), false, false);
         Component browserUI = browser.getUIComponent();
 
         Config config = Config.get();
