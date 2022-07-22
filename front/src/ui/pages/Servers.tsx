@@ -8,7 +8,7 @@ export function Servers() {
   const { servers: allServers } = useContext(ServersContext)
 
   const servers = useMemo(
-    () => allServers.filter((server) => server.name.toLowerCase().includes(filter.toLowerCase())),
+    () => Object.values(allServers).filter((server) => server.name.toLowerCase().includes(filter.toLowerCase())),
     [allServers, filter]
   )
 

@@ -96,7 +96,7 @@ export function Topics() {
             placeholder="Server"
           >
             {!server && <option value="">Select a server</option>}
-            {servers.map((server) => (
+            {Object.values(servers).map((server) => (
               <option key={server.key} value={server.key}>
                 {server.name}
               </option>

@@ -1,9 +1,8 @@
-export function query<T>(name: keyof WindowBinding, ...args: unknown[]) {
+export function query<T>(name: keyof WindowBinding, args?: Record<string, unknown>) {
   return new Promise<T>((resolve, reject) => {
     window[name]({
-      request: JSON.stringify(args),
+      request: args ? JSON.stringify(args) : '',
       onSuccess: (response) => {
-        console.log('Success', response)
         resolve(JSON.parse(response))
       },
       onFailure: (code, message) => {
