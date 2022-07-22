@@ -3,7 +3,7 @@ import { query } from './query'
 
 export function getTopics(key: string): Promise<ITopic[]> {
   if (!key) return Promise.resolve([])
-  return query('GetTopics')
+  return query('GetTopics', key)
 }
 
 export function getFavoriteTopics(): Promise<{ topic: string; server: string }[]> {

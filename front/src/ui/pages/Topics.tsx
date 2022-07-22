@@ -66,7 +66,7 @@ export function Topics() {
         style: { width: 1 },
       },
       {
-        header: 'Topic',
+        header: 'Favorite',
         cell: ({ name, favorite }) => (
           <Star
             fill={favorite ? 'currentColor' : 'none'}

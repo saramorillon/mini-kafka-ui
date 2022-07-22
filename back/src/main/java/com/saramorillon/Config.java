@@ -24,6 +24,12 @@ public class Config {
 
     private Config() {}
 
+    public boolean isFavorite(String server, String topic) {
+        return favorites.stream()
+                .filter(favorite -> favorite.server.equals(server) && favorite.topic.equals(topic))
+                .findFirst().isPresent();
+    }
+
     public static Config get() throws IOException {
         if (instance == null) {
             String content = Files.readString(file);

@@ -1,4 +1,4 @@
-import { Database, PenTool, Plus } from '@styled-icons/feather'
+import { Database, Edit, Plus } from '@styled-icons/feather'
 import React, { useContext, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ServersContext } from '../../contexts/ServersContext'
@@ -43,7 +43,7 @@ export function Servers() {
                 </i>
               </small>
               <Link className="right" to={`/server/${server.key}`}>
-                <PenTool />
+                <Edit />
               </Link>
             </article>
           ))}
