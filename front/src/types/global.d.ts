@@ -21,8 +21,9 @@ declare global {
     }) => void
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-empty-interface
-  interface Window extends WindowBinding {}
+  interface Window extends WindowBinding {
+    eventEmitter: EventTarget
+  }
 }
 
 export {}

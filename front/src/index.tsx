@@ -7,3 +7,7 @@ if (container) {
   const root = createRoot(container)
   root.render(<App />)
 }
+
+class EventEmitter extends EventTarget {}
+
+window.eventEmitter = new EventEmitter()

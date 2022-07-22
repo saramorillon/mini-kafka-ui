@@ -6,6 +6,7 @@ import React, { FormEvent, InputHTMLAttributes, useCallback, useEffect, useMemo,
 import { useConsumer } from '../../hooks/useConsumer'
 import { useCustomColumns } from '../../hooks/useCustomColumns'
 import { useFilters } from '../../hooks/useFilters'
+import { useMessages } from '../../hooks/useMessages'
 import { IMessage } from '../../models/IMessage'
 import { getMessages } from '../../services/message'
 import { MessageDialog } from './MessageDialog'
@@ -26,9 +27,9 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
   const { page, setMaxPage, goTo } = pagination
 
   const [customColumns, onColumnAdd, onColumnDelete] = useCustomColumns()
-  const [filters, onFilter] = useFilters(serverKey, topic)
+  const [filters, onFilter] = useFilters()
 
-  const [messages, setMessages] = useState<IMessage[]>([])
+  const [messages, total] = useMessages(filters, page, limit)
   const [message, setMessage] = useState<IMessage>()
 
   useEffect(() => {
@@ -40,12 +41,8 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
   }, [filters, page])
 
   useEffect(() => {
-    // ipcRenderer.on('total', (event, total) => setMaxPage(Math.ceil(total / limit)))
-  }, [setMaxPage])
-
-  useEffect(() => {
-    // ipcRenderer.on('messages', (event, messages) => setMessages(messages))
-  }, [])
+    setMaxPage(Math.ceil(total / limit))
+  }, [total, setMaxPage])
 
   const columns: IColumn<IMessage>[] = useMemo(
     () => [
@@ -93,7 +90,7 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
   return (
     <>
       <AddColumnForm onColumnAdd={onColumnAdd} />
-      <Table columns={columns} rows={messages} loading={loading} error={error} />
+      <Table columns={columns} rows={messages} loading={loading || !messages.length} error={error} />
       <Pagination pagination={pagination} />
       <MessageDialog message={message} onClose={() => setMessage(undefined)} />
     </>

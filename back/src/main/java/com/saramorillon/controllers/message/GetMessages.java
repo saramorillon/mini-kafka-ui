@@ -1,5 +1,6 @@
 package com.saramorillon.controllers.message;
 
+import java.util.ArrayList;
 import java.util.Map;
 import org.cef.callback.CefQueryCallback;
 import com.saramorillon.Router;
@@ -12,13 +13,13 @@ class GetMessagesParams {
 }
 
 
-public class GetMessages extends Router<SendMessageParams, Void> {
+public class GetMessages extends Router<GetMessagesParams, ArrayList<Void>> {
     public GetMessages() {
-        super(SendMessageParams.class);
+        super(GetMessagesParams.class);
     }
 
     @Override
-    public Response<Void> onQuery(SendMessageParams params, CefQueryCallback callback) {
-        return new Response<Void>(500, "Not implemented");
+    public Response<ArrayList<Void>> onQuery(GetMessagesParams params, CefQueryCallback callback) {
+        return new Response<ArrayList<Void>>(200, new ArrayList<>());
     }
 }

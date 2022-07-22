@@ -1,10 +1,8 @@
 import { useCallback, useState } from 'react'
+import { IMessageFilters } from '../models/IMessage'
 
-export function useFilters(
-  key: string,
-  topic: string
-): [Record<string, string>, (name: string, value: string) => void] {
-  const [filters, setFilters] = useState<Record<string, string>>({ server: key, topic })
+export function useFilters(): [IMessageFilters, (name: string, value: string) => void] {
+  const [filters, setFilters] = useState<IMessageFilters>({})
 
   const onFilter = useCallback((name: string, value: string) => {
     setFilters((filters) => ({ ...filters, [name]: value }))

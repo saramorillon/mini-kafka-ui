@@ -61,7 +61,7 @@ export function Topics() {
         style: { width: 1 },
       },
       {
-        header: 'Topic',
+        header: 'Partitions',
         cell: ({ partitions }) => partitions,
         style: { width: 1 },
       },

@@ -1,7 +1,11 @@
 export interface IMessage {
   partition: number
-  offset: string
-  timestamp: string
+  offset: number
+  timestamp: number
   key?: string
   value: string
+}
+
+export type IMessageFilters = {
+  [k in keyof IMessage]?: string
 }
