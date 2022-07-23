@@ -11,6 +11,8 @@ export function Topic() {
     return <Navigate to="/topics" />
   }
 
+  console.log(key)
+
   return (
     <>
       <header>
@@ -20,7 +22,7 @@ export function Topic() {
         <SendMessageDialog serverKey={key} topic={topic} />
       </header>
       <main>
-        <Messages serverKey={key} topic={topic} />
+        <Messages serverId={key} topic={topic} />
       </main>
     </>
   )

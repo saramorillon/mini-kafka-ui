@@ -2,11 +2,10 @@ package com.saramorillon;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.sql.SQLException;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
@@ -15,9 +14,7 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
-import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import com.google.gson.Gson;
 import com.saramorillon.models.Message;
 import com.saramorillon.models.Server;
 
@@ -47,7 +44,6 @@ public class Consumer implements Runnable {
     public static void stop() {
         System.out.println("Stop consumer");
         closed.set(true);
-        instance.consumer.wakeup();
     }
 
     @Override
@@ -78,26 +74,14 @@ public class Consumer implements Runnable {
         });
 
         try {
-            List<Message> messages = new ArrayList<>();
-
             while (!closed.get()) {
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(1000));
                 for (ConsumerRecord<String, String> record : records) {
-                    messages.add(new Message(server.id, topic, record));
-                }
-
-                if (records.count() == 0 && messages.size() > 0) {
-                    System.out.println("Send " + messages.size() + " messages");
-                    App.browser.executeJavaScript(
-                            "window.eventEmitter.dispatchEvent(new CustomEvent('messages', { detail: { messages: "
-                                    + new Gson().toJson(messages) + " }  }))",
-                            "/get-messages", 0);
-                    messages = new ArrayList<>();
+                    Message.save(new Message(server.id, topic, record));
                 }
             }
-        } catch (WakeupException e) {
-            if (!closed.get())
-                throw e;
+        } catch (SQLException e) {
+            e.printStackTrace();
         } finally {
             consumer.close();
             thread.interrupt();

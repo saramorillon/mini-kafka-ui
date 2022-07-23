@@ -1,4 +1,4 @@
-import { useCopy, usePagination } from '@saramorillon/hooks'
+import { useCopy, useFetch, usePagination } from '@saramorillon/hooks'
 import { Clipboard, Eye, X } from '@styled-icons/feather'
 import { fromUnixTime } from 'date-fns'
 import get from 'lodash.get'
@@ -6,7 +6,6 @@ import React, { FormEvent, InputHTMLAttributes, useCallback, useEffect, useMemo,
 import { useConsumer } from '../../hooks/useConsumer'
 import { useCustomColumns } from '../../hooks/useCustomColumns'
 import { useFilters } from '../../hooks/useFilters'
-import { useMessages } from '../../hooks/useMessages'
 import { IMessage } from '../../models/IMessage'
 import { getMessages } from '../../services/message'
 import { MessageDialog } from './MessageDialog'
@@ -16,12 +15,12 @@ import { IColumn, Table } from './Table'
 const limit = 10
 
 interface IMessagesProps {
-  serverKey: string
+  serverId: string
   topic: string
 }
 
-export function Messages({ serverKey, topic }: IMessagesProps) {
-  const { loading, error } = useConsumer(serverKey, topic)
+export function Messages({ serverId, topic }: IMessagesProps) {
+  const { loading, error } = useConsumer(serverId, topic)
 
   const pagination = usePagination()
   const { page, setMaxPage, goTo } = pagination
@@ -29,7 +28,8 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
   const [customColumns, onColumnAdd, onColumnDelete] = useCustomColumns()
   const [filters, onFilter] = useFilters()
 
-  const [messages, total] = useMessages(filters, page, limit)
+  const fetch = useCallback(() => getMessages(filters, page, limit), [filters, page])
+  const [messages] = useFetch(fetch, [])
   const [message, setMessage] = useState<IMessage>()
 
   useEffect(() => {
@@ -40,9 +40,9 @@ export function Messages({ serverKey, topic }: IMessagesProps) {
     void getMessages(filters, page, limit)
   }, [filters, page])
 
-  useEffect(() => {
-    setMaxPage(Math.ceil(total / limit))
-  }, [total, setMaxPage])
+  // useEffect(() => {
+  //   setMaxPage(Math.ceil(total / limit))
+  // }, [total, setMaxPage])
 
   const columns: IColumn<IMessage>[] = useMemo(
     () => [
