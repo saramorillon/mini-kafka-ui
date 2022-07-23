@@ -1,3 +1,4 @@
+import { IFavorite } from '../models/IFavorite'
 import { ITopic } from '../models/ITopic'
 import { query } from './query'
 
@@ -6,10 +7,10 @@ export function getTopics(key: string): Promise<ITopic[]> {
   return query('GetTopics', key)
 }
 
-export function getFavoriteTopics(): Promise<{ topic: string; server: string }[]> {
+export function getFavoriteTopics(): Promise<IFavorite[]> {
   return query('GetFavoriteTopics')
 }
 
-export function toggleTopicFavorite(key: string, topic: string): Promise<void> {
-  return query('ToggleFavoriteTopic', { key, topic })
+export function toggleTopicFavorite(favorite: IFavorite): Promise<void> {
+  return query('ToggleFavoriteTopic', favorite)
 }

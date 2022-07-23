@@ -3,6 +3,7 @@ import { Star } from '@styled-icons/feather'
 import React, { useCallback, useContext } from 'react'
 import { Link } from 'react-router-dom'
 import { ServersContext } from '../../contexts/ServersContext'
+import { IFavorite } from '../../models/IFavorite'
 import { getFavoriteTopics, toggleTopicFavorite } from '../../services/topic'
 import { LoadContainer } from '../components/LoadContainer'
 
@@ -11,8 +12,8 @@ export function Home() {
   const [favorites, { loading, error }, , replace] = useFetch(getFavoriteTopics, [])
 
   const toggleFavorite = useCallback(
-    (server: string, topic: string) =>
-      toggleTopicFavorite(server, topic).then(() => replace((topics) => topics.filter(({ topic }) => topic !== topic))),
+    (favorite: IFavorite) =>
+      toggleTopicFavorite(favorite).then(() => replace((topics) => topics.filter(({ topic }) => topic !== topic))),
     [replace]
   )
 
@@ -32,11 +33,11 @@ export function Home() {
                 className="right"
                 fill="currentColor"
                 style={{ cursor: 'pointer' }}
-                onClick={() => toggleFavorite(favorite.server, favorite.topic)}
+                onClick={() => toggleFavorite(favorite)}
               />
-              <Link to={`/topic/${favorite.server}/${favorite.topic}`}>{favorite.topic}</Link>
+              <Link to={`/topic/${favorite.serverId}/${favorite.topic}`}>{favorite.topic}</Link>
               <br />
-              <small>{servers[favorite.server].name}</small>
+              <small>{servers.find((server) => server.id === favorite.serverId)?.name}</small>
             </article>
           ))}
         </LoadContainer>

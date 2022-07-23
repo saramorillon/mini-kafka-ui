@@ -37,6 +37,8 @@ public class Favorite {
         Favorite favorite = null;
         String query = "SELECT * FROM favorite WHERE server_id = ? AND topic = ?";
         PreparedStatement statement = Dao.connection.prepareStatement(query);
+        statement.setInt(1, serverId);
+        statement.setString(2, topic);
         ResultSet rs = statement.executeQuery();
         if (rs != null && rs.next()) {
             favorite = new Favorite(rs);
@@ -53,7 +55,7 @@ public class Favorite {
     }
 
     public static void delete(Favorite favorite) throws SQLException {
-        String query = "DELETE FROM favorite WHERE server = ? AND topic = ?";
+        String query = "DELETE FROM favorite WHERE server_id = ? AND topic = ?";
         PreparedStatement statement = Dao.connection.prepareStatement(query);
         statement.setInt(1, favorite.serverId);
         statement.setString(2, favorite.topic);

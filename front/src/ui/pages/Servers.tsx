@@ -35,14 +35,14 @@ export function Servers() {
 
         <div className="grid">
           {servers.map((server) => (
-            <article key={server.key} className="mb0">
+            <article key={server.id} className="mb0">
               <h3>{server.name}</h3>
               <small>
                 <i>
                   {server.brokers.split(',').length} broker{server.brokers.length > 1 && 's'}
                 </i>
               </small>
-              <Link className="right" to={`/server/${server.key}`}>
+              <Link className="right" to={`/server/${server.id}`}>
                 <Edit />
               </Link>
             </article>

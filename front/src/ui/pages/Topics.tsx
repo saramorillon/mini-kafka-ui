@@ -41,7 +41,7 @@ export function Topics() {
 
   const toggleFavorite = useCallback(
     (topic: string) =>
-      toggleTopicFavorite(server, topic).then(() =>
+      toggleTopicFavorite({ serverId: Number(server), topic }).then(() =>
         replace((topics) =>
           topics.map(({ name, partitions, favorite }) => ({
             name,
@@ -97,7 +97,7 @@ export function Topics() {
           >
             {!server && <option value="">Select a server</option>}
             {Object.values(servers).map((server) => (
-              <option key={server.key} value={server.key}>
+              <option key={server.id} value={server.id}>
                 {server.name}
               </option>
             ))}

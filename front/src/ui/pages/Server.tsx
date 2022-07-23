@@ -9,7 +9,7 @@ import { getServer } from '../../services/server'
 import { Loader } from '../components/Helpers'
 
 const empty: IServer = {
-  key: '',
+  id: 0,
   name: '',
   brokers: '',
 }
@@ -49,7 +49,6 @@ export function Server() {
     <>
       <header>
         <h1 className="mb1">{server?.name || 'Create server'}</h1>
-        {server && <small>#{server.key}</small>}
       </header>
       <main>
         <form onSubmit={onSubmit}>

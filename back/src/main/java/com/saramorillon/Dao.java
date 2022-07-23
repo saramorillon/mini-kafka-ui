@@ -35,32 +35,33 @@ public class Dao {
             Statement statement = connection.createStatement();
             statement.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS window (
-                        id INT PRIMARY KEY,
-                        x INT NOT NULL DEFAULT 0,
-                        y INT NOT NULL DEFAULT 0,
-                        width INT NOT NULL DEFAULT 800,
-                        height INT NOT NULL DEFAULT 600,
-                        maximized INT NOT NULL DEFAULT 0
+                        id INTEGER PRIMARY KEY,
+                        x INTEGER NOT NULL DEFAULT 0,
+                        y INTEGER NOT NULL DEFAULT 0,
+                        width INTEGER NOT NULL DEFAULT 800,
+                        height INTEGER NOT NULL DEFAULT 600,
+                        maximized INTEGER NOT NULL DEFAULT 0
                     )""");
             statement.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS server (
-                        id INT PRIMARY KEY,
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
                         name TEXT NOT NULL,
                         brokers TEXT NOT NULL
                     )""");
             statement.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS favorite (
-                        server_id INT NOT NULL,
+                        server_id INTEGER NOT NULL,
                         topic TEXT NOT NULL,
-                        PRIMARY KEY (server_id, topic)
+                        PRIMARY KEY (server_id, topic),
+                        FOREIGN KEY (server_id) REFERENCES server (id)
                     )""");
             statement.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS message (
-                        server_id INT NOT NULL,
+                        server_id INTEGER NOT NULL,
                         topic TEXT NOT NULL,
-                        partition INT NOT NULL,
-                        offset INT NOT NULL,
-                        timestamp INT NOT NULL,
+                        partition INTEGER NOT NULL,
+                        offset INTEGER NOT NULL,
+                        timestamp INTEGER NOT NULL,
                         key TEXT DEFAULT NULL,
                         value TEXT DEFAULT NULL,
                         PRIMARY KEY (server_id, topic, partition, offset)

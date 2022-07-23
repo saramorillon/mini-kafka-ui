@@ -1,7 +1,7 @@
 import { IServer } from '../models/IServer'
 import { query } from './query'
 
-export function getServers(): Promise<Record<string, IServer>> {
+export function getServers(): Promise<IServer[]> {
   return query('GetServers')
 }
 

@@ -36,7 +36,7 @@ public class Server {
 
     public static Server get(Integer id) throws SQLException {
         Server server = null;
-        String query = "SELECT * FROM server WHERE key = ?";
+        String query = "SELECT * FROM server WHERE id = ?";
         PreparedStatement statement = Dao.connection.prepareStatement(query);
         statement.setInt(1, id);
         ResultSet rs = statement.executeQuery();
@@ -47,12 +47,20 @@ public class Server {
     }
 
     public static void save(Server server) throws SQLException {
-        String query = "INSERT OR REPLACE INTO server VALUES (?, ?, ?)";
-        PreparedStatement statement = Dao.connection.prepareStatement(query);
-        statement.setInt(1, server.id);
-        statement.setString(2, server.name);
-        statement.setString(3, server.brokers);
-        statement.executeUpdate();
+        if (server.id == 0) {
+            String query = "INSERT OR REPLACE INTO server (name, brokers) VALUES (?, ?)";
+            PreparedStatement statement = Dao.connection.prepareStatement(query);
+            statement.setString(1, server.name);
+            statement.setString(2, server.brokers);
+            statement.executeUpdate();
+        } else {
+            String query = "INSERT OR REPLACE INTO server VALUES (?, ?, ?)";
+            PreparedStatement statement = Dao.connection.prepareStatement(query);
+            statement.setInt(1, server.id);
+            statement.setString(2, server.name);
+            statement.setString(3, server.brokers);
+            statement.executeUpdate();
+        }
     }
 
     public static void delete(Server server) throws SQLException {

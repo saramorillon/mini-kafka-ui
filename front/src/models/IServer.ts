@@ -1,5 +1,5 @@
 export interface IServer {
-  key: string
+  id: number
   name: string
   brokers: string
 }
