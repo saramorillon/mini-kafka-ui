@@ -1,7 +1,5 @@
 package com.saramorillon;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.sql.SQLException;
 import java.time.Duration;
 import java.util.Arrays;
@@ -48,18 +46,12 @@ public class Consumer implements Runnable {
 
     @Override
     public void run() {
+        String deserializer = StringDeserializer.class.getName();
         Properties props = new Properties();
-        try {
-            props.put(ConsumerConfig.GROUP_ID_CONFIG,
-                    "kafka-desktop-client-" + InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException e1) {
-            props.put(ConsumerConfig.GROUP_ID_CONFIG, "kafka-desktop-client-" + Math.random());
-        }
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, this.server.brokers);
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
-        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG,
-                StringDeserializer.class.getName());
+        props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, deserializer);
+        props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, deserializer);
         System.out.println("Start consumer");
         consumer = new KafkaConsumer<>(props);
         consumer.subscribe(Arrays.asList(this.topic), new ConsumerRebalanceListener() {
