@@ -1,8 +1,7 @@
 package com.saramorillon.controllers.server;
 
-import java.io.IOException;
+import java.sql.SQLException;
 import org.cef.callback.CefQueryCallback;
-import com.saramorillon.Config;
 import com.saramorillon.Router;
 import com.saramorillon.models.Response;
 import com.saramorillon.models.Server;
@@ -15,11 +14,9 @@ public class DeleteServer extends Router<Server, Void> {
     @Override
     public Response<Void> onQuery(Server server, CefQueryCallback callback) {
         try {
-            Config config = Config.get();
-            config.servers.remove(server.key);
-            Config.save();
+            Server.delete(server);
             return new Response<Void>(200);
-        } catch (IOException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return new Response<Void>(500, e.getMessage());
         }

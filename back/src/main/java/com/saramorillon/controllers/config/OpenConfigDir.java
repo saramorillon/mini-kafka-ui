@@ -4,7 +4,7 @@ import java.awt.Desktop;
 import java.io.File;
 import java.io.IOException;
 import org.cef.callback.CefQueryCallback;
-import com.saramorillon.Config;
+import com.saramorillon.Dao;
 import com.saramorillon.Router;
 import com.saramorillon.models.Response;
 
@@ -16,7 +16,7 @@ public class OpenConfigDir extends Router<Void, Void> {
     @Override
     public Response<Void> onQuery(Void params, CefQueryCallback callback) {
         try {
-            Desktop.getDesktop().open(new File(Config.dir));
+            Desktop.getDesktop().open(new File(Dao.dir));
             return new Response<Void>(200);
         } catch (IOException e) {
             e.printStackTrace();

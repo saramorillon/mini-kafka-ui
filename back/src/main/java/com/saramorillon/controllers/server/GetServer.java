@@ -1,23 +1,22 @@
 package com.saramorillon.controllers.server;
 
-import java.io.IOException;
+import java.sql.SQLException;
 import org.cef.callback.CefQueryCallback;
-import com.saramorillon.Config;
 import com.saramorillon.Router;
 import com.saramorillon.models.Response;
 import com.saramorillon.models.Server;
 
-public class GetServer extends Router<String, Server> {
+public class GetServer extends Router<Integer, Server> {
     public GetServer() {
-        super(String.class);
+        super(Integer.class);
     }
 
     @Override
-    public Response<Server> onQuery(String key, CefQueryCallback callback) {
+    public Response<Server> onQuery(Integer id, CefQueryCallback callback) {
         try {
-            Config config = Config.get();
-            return new Response<Server>(200, config.servers.get(key));
-        } catch (IOException e) {
+            Server server = Server.get(id);
+            return new Response<Server>(200, server);
+        } catch (SQLException e) {
             e.printStackTrace();
             return new Response<Server>(500, e.getMessage());
         }

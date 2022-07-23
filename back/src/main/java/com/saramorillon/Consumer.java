@@ -83,7 +83,7 @@ public class Consumer implements Runnable {
             while (!closed.get()) {
                 ConsumerRecords<String, String> records = consumer.poll(Duration.ofSeconds(5));
                 for (ConsumerRecord<String, String> record : records) {
-                    messages.add(new Message(record));
+                    messages.add(new Message(server.id, topic, record));
                 }
 
                 if (records.count() == 0 && messages.size() > 0) {

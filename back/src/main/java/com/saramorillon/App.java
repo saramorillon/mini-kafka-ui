@@ -29,6 +29,7 @@ import com.saramorillon.controllers.server.SaveServer;
 import com.saramorillon.controllers.topic.GetFavoriteTopics;
 import com.saramorillon.controllers.topic.GetTopics;
 import com.saramorillon.controllers.topic.ToggleFavoriteTopic;
+import com.saramorillon.models.Window;
 import me.friwi.jcefmaven.CefAppBuilder;
 import me.friwi.jcefmaven.CefInitializationException;
 import me.friwi.jcefmaven.MavenCefAppHandlerAdapter;
@@ -38,6 +39,7 @@ class AppHandler extends MavenCefAppHandlerAdapter {
     @Override
     public void stateHasChanged(org.cef.CefApp.CefAppState state) {
         if (state == CefAppState.TERMINATED) {
+            Dao.close();
             System.exit(0);
         }
     }
@@ -56,30 +58,22 @@ class WindowListener extends WindowAdapter {
 class ComponentListener extends ComponentAdapter {
     @Override
     public void componentMoved(ComponentEvent e) {
-        try {
-            Config config = Config.get();
-            Point point = ((JFrame) e.getSource()).getLocation();
-            config.window.x = (int) point.getX();
-            config.window.y = (int) point.getY();
-            Config.save();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+        Window window = Window.get();
+        Point point = ((JFrame) e.getSource()).getLocation();
+        window.x = (int) point.getX();
+        window.y = (int) point.getY();
+        Window.save(window);
     }
 
     @Override
     public void componentResized(ComponentEvent e) {
-        try {
-            Config config = Config.get();
-            Dimension dimension = ((JFrame) e.getSource()).getSize();
-            int state = ((JFrame) e.getSource()).getExtendedState();
-            config.window.width = (int) dimension.getWidth();
-            config.window.height = (int) dimension.getHeight();
-            config.window.maximized = state == JFrame.MAXIMIZED_BOTH;
-            Config.save();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
+        Window window = Window.get();
+        Dimension dimension = ((JFrame) e.getSource()).getSize();
+        int state = ((JFrame) e.getSource()).getExtendedState();
+        window.width = (int) dimension.getWidth();
+        window.height = (int) dimension.getHeight();
+        window.maximized = state == JFrame.MAXIMIZED_BOTH;
+        Window.save(window);
     }
 }
 
@@ -89,6 +83,7 @@ public class App {
 
     public static void main(String[] args) throws UnsupportedPlatformException,
             CefInitializationException, IOException, InterruptedException {
+        Dao.connect();
         CefAppBuilder builder = new CefAppBuilder();
         builder.getCefSettings().windowless_rendering_enabled = false;
         builder.setAppHandler(new AppHandler());
@@ -118,15 +113,15 @@ public class App {
         browser = client.createBrowser(App.getUrl(), false, false);
         Component browserUI = browser.getUIComponent();
 
-        Config config = Config.get();
+        Window window = Window.get();
 
         JFrame frame = new JFrame();
         frame.add(browserUI);
-        if (config.window.maximized) {
+        if (window.maximized) {
             frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
         }
-        frame.setLocation(new Point(config.window.x, config.window.y));
-        frame.setSize(config.window.width, config.window.height);
+        frame.setLocation(new Point(window.x, window.y));
+        frame.setSize(window.width, window.height);
         frame.setVisible(true);
         frame.addWindowListener(new WindowListener());
         frame.addComponentListener(new ComponentListener());

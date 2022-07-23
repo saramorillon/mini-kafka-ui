@@ -1,26 +1,25 @@
 package com.saramorillon.controllers.topic;
 
-import java.io.IOException;
-import java.util.List;
+import java.sql.SQLException;
+import java.util.Collection;
 import org.cef.callback.CefQueryCallback;
-import com.saramorillon.Config;
 import com.saramorillon.Router;
 import com.saramorillon.models.Favorite;
 import com.saramorillon.models.Response;
 
-public class GetFavoriteTopics extends Router<Void, List<Favorite>> {
+public class GetFavoriteTopics extends Router<Void, Collection<Favorite>> {
     public GetFavoriteTopics() {
         super(Void.class);
     }
 
     @Override
-    public Response<List<Favorite>> onQuery(Void params, CefQueryCallback callback) {
+    public Response<Collection<Favorite>> onQuery(Void params, CefQueryCallback callback) {
         try {
-            Config config = Config.get();
-            return new Response<List<Favorite>>(200, config.favorites);
-        } catch (IOException e) {
+            Collection<Favorite> favorites = Favorite.get();
+            return new Response<Collection<Favorite>>(200, favorites);
+        } catch (SQLException e) {
             e.printStackTrace();
-            return new Response<List<Favorite>>(500, e.getMessage());
+            return new Response<Collection<Favorite>>(500, e.getMessage());
         }
     }
 }
