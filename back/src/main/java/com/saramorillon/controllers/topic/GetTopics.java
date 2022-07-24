@@ -52,9 +52,10 @@ public class GetTopics extends Router<Integer, Collection<Topic>> {
         Collection<Topic> result = new ArrayList<>(topics.size());
         for (String name : topics) {
             Topic topic = new Topic();
+            topic.serverId = server.id;
             topic.name = name;
             topic.favorite = Favorite.get(server.id, name) != null;
-            topic.partitions = descriptions.get(name).get().partitions().size();
+            topic.partitions = descriptions.get(name).get().partitions().toArray(new Integer[] {});
             result.add(topic);
         }
         return result;

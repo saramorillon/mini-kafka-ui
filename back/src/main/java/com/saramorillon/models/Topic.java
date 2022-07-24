@@ -1,7 +1,8 @@
 package com.saramorillon.models;
 
 public class Topic {
+    public int serverId;
     public String name;
-    public int partitions;
+    public Integer[] partitions;
     public boolean favorite;
 }
