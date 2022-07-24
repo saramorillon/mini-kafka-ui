@@ -11,8 +11,6 @@ export function Topic() {
     return <Navigate to="/topics" />
   }
 
-  console.log(key)
-
   return (
     <>
       <header>
