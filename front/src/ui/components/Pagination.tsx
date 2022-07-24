@@ -1,12 +1,21 @@
-import { IPagination } from '@saramorillon/hooks'
-import React from 'react'
+import { IPagination, useFetch } from '@saramorillon/hooks'
+import React, { useCallback, useEffect } from 'react'
+import { countMessages } from '../../services/message'
+
+const limit = 10
 
 interface IPaginationProps {
   pagination: IPagination
 }
 
 export function Pagination({ pagination }: IPaginationProps) {
-  const { page, maxPage, first, previous, next, last, canPrevious, canNext } = pagination
+  const fetch = useCallback(() => countMessages({}, limit), [])
+  const [total, { loading }] = useFetch(fetch, 0)
+  const { page, maxPage, setMaxPage, first, previous, next, last, canPrevious, canNext } = pagination
+
+  useEffect(() => {
+    setMaxPage(total)
+  }, [total, setMaxPage])
 
   return (
     <div className="center">
@@ -17,7 +26,7 @@ export function Pagination({ pagination }: IPaginationProps) {
         ⟨
       </button>
       <span className="mx1">
-        Page {page} of {maxPage}
+        Page {page} of <span aria-busy={loading}>{maxPage}</span>
       </span>
       <button disabled={!canNext} onClick={next} aria-label="Next">
         ⟩

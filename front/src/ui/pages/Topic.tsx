@@ -1,7 +1,7 @@
 import { List } from '@styled-icons/feather'
 import React from 'react'
 import { Navigate, useParams } from 'react-router-dom'
-import { Messages } from '../components/Message'
+import { Partitions } from '../components/Partitions'
 import { SendMessageDialog } from '../components/SendMessageDIalog'
 
 export function Topic() {
@@ -20,7 +20,7 @@ export function Topic() {
         <SendMessageDialog serverKey={key} topic={topic} />
       </header>
       <main>
-        <Messages serverId={key} topic={topic} />
+        <Partitions serverId={key} topic={topic} />
       </main>
     </>
   )

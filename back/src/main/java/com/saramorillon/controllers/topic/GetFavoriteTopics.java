@@ -3,6 +3,7 @@ package com.saramorillon.controllers.topic;
 import java.sql.SQLException;
 import java.util.Collection;
 import org.cef.callback.CefQueryCallback;
+import com.saramorillon.Logger;
 import com.saramorillon.Router;
 import com.saramorillon.models.Favorite;
 import com.saramorillon.models.Response;
@@ -14,12 +15,15 @@ public class GetFavoriteTopics extends Router<Void, Collection<Favorite>> {
 
     @Override
     public Response<Collection<Favorite>> onQuery(Void params, CefQueryCallback callback) {
+        Logger.info("get_favorite_topics");
         try {
-            Collection<Favorite> favorites = Favorite.get();
-            return new Response<Collection<Favorite>>(200, favorites);
+            var favorites = Favorite.get();
+            Logger.info("get_favorite_topics_success");
+            return new Response<>(200, favorites);
         } catch (SQLException e) {
+            Logger.error("get_favorite_topics_failure", e);
             e.printStackTrace();
-            return new Response<Collection<Favorite>>(500, e.getMessage());
+            return new Response<>(500, e.getMessage());
         }
     }
 }

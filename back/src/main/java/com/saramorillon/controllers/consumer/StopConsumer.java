@@ -1,8 +1,9 @@
 package com.saramorillon.controllers.consumer;
 
 import org.cef.callback.CefQueryCallback;
-import com.saramorillon.Consumer;
+import com.saramorillon.Logger;
 import com.saramorillon.Router;
+import com.saramorillon.kafka.Consumer;
 import com.saramorillon.models.Response;
 
 public class StopConsumer extends Router<Void, Void> {
@@ -12,7 +13,12 @@ public class StopConsumer extends Router<Void, Void> {
 
     @Override
     public Response<Void> onQuery(Void params, CefQueryCallback callback) {
-        Consumer.stop();
-        return new Response<Void>(200);
+        Logger.info("stop_consumer");
+        for (var consumer : Consumer.consumers.values()) {
+            consumer.stop();
+        }
+        Consumer.consumers.clear();
+        Logger.info("stop_consumer_success");
+        return new Response<>(200);
     }
 }

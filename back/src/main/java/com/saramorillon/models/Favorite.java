@@ -1,6 +1,5 @@
 package com.saramorillon.models;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -23,10 +22,10 @@ public class Favorite {
     }
 
     public static Collection<Favorite> get() throws SQLException {
-        Collection<Favorite> favorites = new ArrayList<>();
-        String query = "SELECT * FROM favorite";
-        PreparedStatement statement = Dao.connection.prepareStatement(query);
-        ResultSet rs = statement.executeQuery();
+        var favorites = new ArrayList<Favorite>();
+        var query = "SELECT * FROM favorite";
+        var statement = Dao.connection.prepareStatement(query);
+        var rs = statement.executeQuery();
         while (rs != null && rs.next()) {
             favorites.add(new Favorite(rs));
         }
@@ -35,11 +34,11 @@ public class Favorite {
 
     public static Favorite get(int serverId, String topic) throws SQLException {
         Favorite favorite = null;
-        String query = "SELECT * FROM favorite WHERE server_id = ? AND topic = ?";
-        PreparedStatement statement = Dao.connection.prepareStatement(query);
+        var query = "SELECT * FROM favorite WHERE server_id = ? AND topic = ?";
+        var statement = Dao.connection.prepareStatement(query);
         statement.setInt(1, serverId);
         statement.setString(2, topic);
-        ResultSet rs = statement.executeQuery();
+        var rs = statement.executeQuery();
         if (rs != null && rs.next()) {
             favorite = new Favorite(rs);
         }
@@ -47,16 +46,16 @@ public class Favorite {
     }
 
     public static void save(Favorite favorite) throws SQLException {
-        String query = "INSERT INTO favorite VALUES (?, ?)";
-        PreparedStatement statement = Dao.connection.prepareStatement(query);
+        var query = "INSERT INTO favorite VALUES (?, ?)";
+        var statement = Dao.connection.prepareStatement(query);
         statement.setInt(1, favorite.serverId);
         statement.setString(2, favorite.topic);
         statement.executeUpdate();
     }
 
     public static void delete(Favorite favorite) throws SQLException {
-        String query = "DELETE FROM favorite WHERE server_id = ? AND topic = ?";
-        PreparedStatement statement = Dao.connection.prepareStatement(query);
+        var query = "DELETE FROM favorite WHERE server_id = ? AND topic = ?";
+        var statement = Dao.connection.prepareStatement(query);
         statement.setInt(1, favorite.serverId);
         statement.setString(2, favorite.topic);
         statement.executeUpdate();

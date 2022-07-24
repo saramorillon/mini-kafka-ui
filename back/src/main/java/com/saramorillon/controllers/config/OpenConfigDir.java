@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import org.cef.callback.CefQueryCallback;
 import com.saramorillon.Dao;
+import com.saramorillon.Logger;
 import com.saramorillon.Router;
 import com.saramorillon.models.Response;
 
@@ -15,12 +16,14 @@ public class OpenConfigDir extends Router<Void, Void> {
 
     @Override
     public Response<Void> onQuery(Void params, CefQueryCallback callback) {
+        Logger.info("open_config_dir");
         try {
             Desktop.getDesktop().open(new File(Dao.dir));
-            return new Response<Void>(200);
+            Logger.info("open_config_dir_success");
+            return new Response<>(200);
         } catch (IOException e) {
-            e.printStackTrace();
-            return new Response<Void>(500, e.getMessage());
+            Logger.error("open_config_dir_failure", e);
+            return new Response<>(500, e.getMessage());
         }
     }
 }

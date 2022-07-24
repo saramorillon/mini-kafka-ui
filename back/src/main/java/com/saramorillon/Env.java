@@ -14,7 +14,7 @@ public class Env {
     }
 
     private Env() {
-        dotenv = Dotenv.configure().load();
+        this.dotenv = Dotenv.configure().load();
     }
 
     public static String getEnv() {

@@ -3,36 +3,39 @@ package com.saramorillon;
 import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 
 public class Dao {
     public static String dir = getDir();
     public static Connection connection;
 
     public static void connect() {
+        Logger.info("connect_db");
         try {
-            String url = "jdbc:sqlite:" + dir + "/db.sqlite";
-            connection = DriverManager.getConnection(url);
+            var url = "jdbc:sqlite:" + dir + "/db.sqlite";
+            Dao.connection = DriverManager.getConnection(url);
             init();
+            Logger.info("connect_db_success");
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error("connect_db_failure", e);
         }
     }
 
     public static void close() {
+        Logger.info("close_db");
         truncate();
         try {
             connection.close();
+            Logger.info("close_db_success");
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error("close_db_failure", e);
         }
     }
 
     private static void init() {
+        Logger.info("init_db");
         try {
-            Statement statement = connection.createStatement();
+            var statement = connection.createStatement();
             statement.executeUpdate("""
                     CREATE TABLE IF NOT EXISTS window (
                         id INTEGER PRIMARY KEY,
@@ -67,24 +70,27 @@ public class Dao {
                         PRIMARY KEY (server_id, topic, partition, offset)
                     )""");
             statement.executeUpdate("INSERT OR IGNORE INTO window VALUES (0, 0, 0, 800, 600, 0)");
+            Logger.info("init_db_success");
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error("init_db_failure", e);
         }
     }
 
     private static void truncate() {
+        Logger.info("clean_db");
         try {
-            String query = "TRUNCATE TABLE message;";
-            PreparedStatement statement = connection.prepareStatement(query);
+            var query = "TRUNCATE TABLE message;";
+            var statement = connection.prepareStatement(query);
             statement.executeUpdate();
+            Logger.info("clean_db_success");
         } catch (SQLException e) {
-            e.printStackTrace();
+            Logger.error("clean_db_failure", e);
         }
     }
 
     private static String getDir() {
-        String homedir = System.getProperty("user.home");
-        String platform = System.getProperty("os.name").toLowerCase();
+        var homedir = System.getProperty("user.home");
+        var platform = System.getProperty("os.name").toLowerCase();
         if (platform.indexOf("win") >= 0) {
             return Paths.get(homedir, "AppData", "Roaming", "mini-kafka-ui").toString();
         }

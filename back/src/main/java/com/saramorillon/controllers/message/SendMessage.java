@@ -1,14 +1,11 @@
 package com.saramorillon.controllers.message;
 
 import java.sql.SQLException;
-import java.util.Properties;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerConfig;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.common.Uuid;
 import org.cef.callback.CefQueryCallback;
+import com.saramorillon.Logger;
 import com.saramorillon.Router;
+import com.saramorillon.kafka.Producer;
 import com.saramorillon.models.Response;
 import com.saramorillon.models.Server;
 
@@ -26,19 +23,18 @@ public class SendMessage extends Router<SendMessageParams, Void> {
 
     @Override
     public Response<Void> onQuery(SendMessageParams params, CefQueryCallback callback) {
+        Logger.info("send_message");
         try {
-            Server server = Server.get(params.id);
-            Properties props = new Properties();
-            props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, server.brokers);
-            props.put(ProducerConfig.ACKS_CONFIG, "all");
-            Producer<String, String> producer = new KafkaProducer<>(props);
-            producer.send(new ProducerRecord<String, String>(params.topic,
-                    Uuid.randomUuid().toString(), params.value));
-            producer.close();
-            return new Response<Void>(200);
+            var server = Server.get(params.id);
+            var producer = new Producer(server.brokers, params.topic);
+            producer.send(Uuid.randomUuid().toString(), params.value);
+            producer.stop();
+            Logger.info("send_message_success");
+            return new Response<>(200);
         } catch (SQLException e) {
+            Logger.error("send_message_failure", e);
             e.printStackTrace();
-            return new Response<Void>(500, e.getMessage());
+            return new Response<>(500, e.getMessage());
         }
     }
 }

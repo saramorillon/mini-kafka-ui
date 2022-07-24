@@ -3,17 +3,11 @@ package com.saramorillon.controllers.topic;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.ListTopicsOptions;
-import org.apache.kafka.clients.admin.TopicDescription;
-import org.apache.kafka.common.KafkaFuture;
 import org.cef.callback.CefQueryCallback;
+import com.saramorillon.Logger;
 import com.saramorillon.Router;
+import com.saramorillon.kafka.Admin;
 import com.saramorillon.models.Favorite;
 import com.saramorillon.models.Response;
 import com.saramorillon.models.Server;
@@ -26,38 +20,27 @@ public class GetTopics extends Router<Integer, Collection<Topic>> {
 
     @Override
     public Response<Collection<Topic>> onQuery(Integer id, CefQueryCallback callback) {
+        Logger.info("get_topics");
         try {
-            Server server = Server.get(id);
-            Collection<Topic> topics = this.getTopics(server);
-            return new Response<Collection<Topic>>(200, topics);
+            var server = Server.get(id);
+            var client = new Admin(server.brokers);
+            var topics = client.listTopics();
+            var result = new ArrayList<Topic>(topics.size());
+            for (String name : topics) {
+                Topic topic = new Topic();
+                topic.serverId = server.id;
+                topic.name = name;
+                topic.favorite = Favorite.get(server.id, name) != null;
+                topic.partitions = client.listPartitions(name).toArray(Integer[]::new);
+                result.add(topic);
+            }
+            Logger.info("get_topics_success");
+            return new Response<>(200, result);
         } catch (SQLException | InterruptedException | ExecutionException e) {
+            Logger.error("get_topics_failure", e);
             e.printStackTrace();
-            return new Response<Collection<Topic>>(500, e.getMessage());
+            return new Response<>(500, e.getMessage());
         }
     }
 
-    private Collection<Topic> getTopics(Server server)
-            throws InterruptedException, ExecutionException, SQLException {
-        Properties properties = new Properties();
-        properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, server.brokers);
-        AdminClient admin = AdminClient.create(properties);
-
-        ListTopicsOptions options = new ListTopicsOptions();
-        options.listInternal(false);
-
-        Set<String> topics = admin.listTopics(options).names().get();
-        Map<String, KafkaFuture<TopicDescription>> descriptions =
-                admin.describeTopics(topics).topicNameValues();
-
-        Collection<Topic> result = new ArrayList<>(topics.size());
-        for (String name : topics) {
-            Topic topic = new Topic();
-            topic.serverId = server.id;
-            topic.name = name;
-            topic.favorite = Favorite.get(server.id, name) != null;
-            topic.partitions = descriptions.get(name).get().partitions().toArray(new Integer[] {});
-            result.add(topic);
-        }
-        return result;
-    }
 }

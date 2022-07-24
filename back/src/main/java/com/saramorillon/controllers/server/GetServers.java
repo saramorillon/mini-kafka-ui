@@ -3,6 +3,7 @@ package com.saramorillon.controllers.server;
 import java.sql.SQLException;
 import java.util.Collection;
 import org.cef.callback.CefQueryCallback;
+import com.saramorillon.Logger;
 import com.saramorillon.Router;
 import com.saramorillon.models.Response;
 import com.saramorillon.models.Server;
@@ -14,12 +15,15 @@ public class GetServers extends Router<Void, Collection<Server>> {
 
     @Override
     public Response<Collection<Server>> onQuery(Void params, CefQueryCallback callback) {
+        Logger.info("get_servers");
         try {
-            Collection<Server> servers = Server.get();
-            return new Response<Collection<Server>>(200, servers);
+            var servers = Server.get();
+            Logger.info("get_servers_success");
+            return new Response<>(200, servers);
         } catch (SQLException e) {
+            Logger.error("get_servers_failure", e);
             e.printStackTrace();
-            return new Response<Collection<Server>>(500, e.getMessage());
+            return new Response<>(500, e.getMessage());
         }
     }
 }

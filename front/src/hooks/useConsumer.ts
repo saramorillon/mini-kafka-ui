@@ -1,19 +1,15 @@
-import { useEffect, useState } from 'react'
+import { useFetch } from '@saramorillon/hooks'
+import { useCallback, useEffect } from 'react'
 import { startConsumer, stopConsumer } from '../services/consumer'
 
 export function useConsumer(serverId: string, topic: string) {
-  const [error, setError] = useState<unknown>()
-  const [loading, setLoading] = useState(true)
+  const fetch = useCallback(() => startConsumer(serverId, topic), [serverId, topic])
 
   useEffect(() => {
-    setLoading(true)
-    void startConsumer(serverId, topic)
-      .catch(setError)
-      .finally(() => setLoading(false))
     return () => {
       void stopConsumer()
     }
   }, [serverId, topic])
 
-  return { loading, error }
+  return useFetch(fetch, [])
 }

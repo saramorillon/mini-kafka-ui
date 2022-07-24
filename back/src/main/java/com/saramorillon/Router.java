@@ -12,16 +12,10 @@ import com.saramorillon.models.Response;
 
 
 public abstract class Router<P, R> extends CefMessageRouterHandlerAdapter {
-    private String name = null;
     private Class<P> paramClass = null;
 
     public Router(Class<P> paramClass) {
-        this.name = getClass().getName();
         this.paramClass = paramClass;
-    }
-
-    public String getName() {
-        return this.name;
     }
 
     public abstract Response<R> onQuery(P params, CefQueryCallback callback);
@@ -35,7 +29,7 @@ public abstract class Router<P, R> extends CefMessageRouterHandlerAdapter {
         } else {
             params = new Gson().fromJson(request, this.paramClass);
         }
-        Response<R> response = this.onQuery(params, callback);
+        var response = this.onQuery(params, callback);
         if (response.code < 400) {
             callback.success(new Gson().toJson(response.body));
         } else {
@@ -46,7 +40,7 @@ public abstract class Router<P, R> extends CefMessageRouterHandlerAdapter {
     }
 
     public static CefMessageRouter route(CefMessageRouterHandlerAdapter adapter) {
-        String name = adapter.getClass().getSimpleName();
+        var name = adapter.getClass().getSimpleName();
         return CefMessageRouter.create(new CefMessageRouterConfig(name, name + "Abort"), adapter);
     }
 }

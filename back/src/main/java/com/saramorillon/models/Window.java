@@ -1,9 +1,7 @@
 package com.saramorillon.models;
 
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import com.saramorillon.Dao;
 
 public class Window {
@@ -34,10 +32,10 @@ public class Window {
     }
 
     public static Window get() {
-        Window window = new Window();
+        var window = new Window();
         try {
-            Statement statement = Dao.connection.createStatement();
-            ResultSet rs = statement.executeQuery("SELECT * FROM window WHERE id = 0");
+            var statement = Dao.connection.createStatement();
+            var rs = statement.executeQuery("SELECT * FROM window WHERE id = 0");
             if (rs != null && rs.next()) {
                 window = new Window(rs);
             }
@@ -49,8 +47,8 @@ public class Window {
 
     public static void save(Window window) {
         try {
-            String query = "INSERT OR REPLACE INTO window VALUES (?, ?, ?, ?, ?, ?)";
-            PreparedStatement statement = Dao.connection.prepareStatement(query);
+            var query = "INSERT OR REPLACE INTO window VALUES (?, ?, ?, ?, ?, ?)";
+            var statement = Dao.connection.prepareStatement(query);
             statement.setInt(1, window.id);
             statement.setInt(2, window.x);
             statement.setInt(3, window.y);

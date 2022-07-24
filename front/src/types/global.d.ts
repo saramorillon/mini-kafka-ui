@@ -8,6 +8,7 @@ declare global {
     | 'GetServer'
     | 'SaveServer'
     | 'DeleteServer'
+    | 'CountMessages'
     | 'GetMessages'
     | 'SendMessage'
     | 'StartConsumer'
