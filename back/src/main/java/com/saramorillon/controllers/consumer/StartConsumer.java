@@ -1,6 +1,7 @@
 package com.saramorillon.controllers.consumer;
 
 import java.sql.SQLException;
+import java.util.concurrent.ExecutionException;
 import org.cef.callback.CefQueryCallback;
 import com.saramorillon.Consumer;
 import com.saramorillon.Router;
@@ -24,7 +25,7 @@ public class StartConsumer extends Router<StartConsumerParams, Void> {
             Server server = Server.get(params.id);
             Consumer.start(server, params.topic);
             return new Response<Void>(200);
-        } catch (SQLException e) {
+        } catch (SQLException | InterruptedException | ExecutionException e) {
             e.printStackTrace();
             return new Response<Void>(500, e.getMessage());
         }
